@@ -135,5 +135,7 @@ img {
     animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    /* 只归零 duration 会留下 delay：错峰动效会露出几十毫秒的中间态 */
+    transition-delay: 0ms !important;
   }
 }
