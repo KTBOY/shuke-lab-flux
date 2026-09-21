@@ -1,0 +1,18 @@
+# 统一以 LF 入库：Windows 侧的 core.autocrlf 不会把行尾差异带进 diff
+* text=auto eol=lf
+
+# 素材与字体是二进制，既不做行尾转换也不该出现在文本 diff 里
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.mp4 binary
+*.woff binary
+*.woff2 binary
+
+# 锁文件由 npm 生成，GitHub 上折叠显示
+package-lock.json linguist-generated=true
+
+*.md diff=markdown
