@@ -1,0 +1,13 @@
+# 冻结文件:零依赖单文件,必须逐字节不变(CI 有 cmp 校验)
+# 任何"顺手格式化"都会让它与仓库基线产生实质差异
+public/flux/
+
+# 构建产物
+dist/
+
+# README 素材与截图,不参与代码格式
+assets/
+image/
+
+# 由 npm 生成,格式随 npm 版本变化
+package-lock.json

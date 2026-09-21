@@ -32,8 +32,8 @@
 ## 快速开始
 
 ```bash
-# 要求 Node >= 20
-npm install
+# 要求 Node >= 22.12(见 package.json 的 engines 与 .nvmrc)
+npm ci
 npm run dev        # http://localhost:5173
 ```
 
@@ -41,18 +41,22 @@ npm run dev        # http://localhost:5173
 
 ## 可用脚本
 
-| 命令                      | 作用                                                  |
-| ------------------------- | ----------------------------------------------------- |
-| `npm run dev`             | 启动开发服务器                                        |
-| `npm run build`           | 类型检查 + 生产构建                                   |
-| `npm run build-only`      | 仅构建,跳过类型检查                                   |
-| `npm run preview`         | 预览构建产物                                          |
-| `npm run type-check`      | `vue-tsc` 类型检查                                    |
-| `npm run lint`            | ESLint 检查并自动修复                                 |
-| `npm run lint:check`      | ESLint 只检查不改写(CI 用这条)                        |
-| `npm run format`          | Prettier 格式化 `src/`                                |
-| `npm run assets:optimize` | 把 `src/assets/img/*.png` 原图压成 2x 展示尺寸的 WebP |
-| `npm run screenshot`      | 用本机 Edge 无头模式出图,用于与参考稿逐块比对         |
+| 命令                      | 作用                                                          |
+| ------------------------- | ------------------------------------------------------------- |
+| `npm run dev`             | 启动开发服务器                                                |
+| `npm run build`           | 类型检查 + 生产构建                                           |
+| `npm run build-only`      | 仅构建,跳过类型检查                                           |
+| `npm run preview`         | 预览构建产物                                                  |
+| `npm run type-check`      | `vue-tsc` 类型检查                                            |
+| `npm run lint`            | ESLint 检查并自动修复                                         |
+| `npm run lint:check`      | ESLint 只检查不改写(CI 用这条)                                |
+| `npm run format`          | Prettier 格式化全仓库(`.prettierignore` 会跳过冻结文件与产物) |
+| `npm run format:check`    | Prettier 只检查不改写(CI 用这条)                              |
+| `npm run test:unit`       | Vitest 跑 `src/**/__tests__`                                  |
+| `npm run test:watch`      | Vitest 监听模式                                               |
+| `npm run coverage`        | 跑测试并输出覆盖率(低于门槛即失败)                            |
+| `npm run assets:optimize` | 把 `src/assets/img/*.png` 原图压成 2x 展示尺寸的 WebP         |
+| `npm run screenshot`      | 用本机 Edge 无头模式出图,用于与参考稿逐块比对                 |
 
 ## FLUX 颜色生成器
 
@@ -176,6 +180,8 @@ Vue 版分层:
 
 ## 工程约定
 
+摘要如下,完整且权威的版本(含禁止事项与提交前命令)在 **[AGENTS.md](./AGENTS.md)**。
+
 - **无自动导入**:`.vue` 与 `.ts` 中的 Vue API 均需显式 `import`,类型导入用 `import type`。
 - **令牌驱动**:颜色/圆角/字号/阴影统一取自 `src/styles/tokens.css` 的 CSS 变量,组件里不写魔法色值。
 - **数据与视图分离**:文案与指标集中在 `src/data/dashboard.ts`,组件只负责渲染。
@@ -188,7 +194,7 @@ Vue 版分层:
 
 ```
 .
-├── public/flux/index.html   # FLUX 旧版单文件,零依赖,构建时原样拷贝
+├── public/flux/index.html   # FLUX 旧版单文件,零依赖,构建时原样拷贝(冻结)
 ├── src/
 │  ├── assets/img/           # 素材(人像、设备、头像)
 │  ├── components/
@@ -196,16 +202,24 @@ Vue 版分层:
 │  │  ├── flux/              # FluxCapsule 一块 WebGL 胶囊卡
 │  │  └── ui/                # AppIcon / AvatarStack 等无业务原子件
 │  ├── composables/          # useFluidField、useTimeTracker、useOnboardingTasks
-│  ├── data/                 # dashboard.ts 内容与类型、fluxThemes.ts 主题、icons.ts 图标表
+│  │  └── __tests__/         # 时钟启停、暂停门控、搅动衰减、降级路径
+│  ├── data/                 # 内容与类型:dashboard、fluxThemes、icons(+ __tests__)
 │  ├── layouts/AppShell.vue  # 渐变画布 + 常驻导航 + 页脚,三个页面共用
 │  ├── router/               # 路由表与路由名常量
 │  ├── styles/               # tokens.css 设计令牌、base.css 重置与复用类
+│  ├── test/setup.ts         # jsdom 环境补齐(matchMedia 等)
 │  ├── views/                # DashboardView / FluxStudioView / ColorLabLegacyView
 │  ├── webgl/fluxShader.ts   # FLUX 着色器 GLSL 源码
 │  ├── App.vue
 │  └── main.ts
+├── .husky/                  # pre-commit(lint-staged)与 commit-msg(commitlint)
 ├── assets/                  # README 用的演示图与录屏
 ├── scripts/                 # 素材压缩、无头截图脚本
+├── AGENTS.md                # 人与 AI 共用的硬约束清单
+├── CONTRIBUTING.md          # 流程细节
+├── commitlint.config.js     # 提交信息规则
+├── vitest.config.ts         # 测试环境与覆盖率门槛
+├── .prettierignore          # 挡住冻结文件与产物
 └── index.html               # Vue 应用外壳
 ```
 
@@ -213,11 +227,21 @@ Vue 版分层:
 
 现代常青浏览器(Chrome / Edge / Safari 16.4+ / Firefox 110+)。用到 CSS 容器查询、`mask`、WebGL 等现代特性,不支持 IE。
 
+## 质量门禁
+
+**CI**(`.github/workflows/ci.yml`)按顺序跑:ESLint → Prettier → `vue-tsc` → Vitest 覆盖率 → 构建 → `cmp` 校验 FLUX 单文件未被改动;PR 还要过 commitlint。
+
+**本地钩子**(husky + lint-staged):`pre-commit` 只对暂存文件跑 `eslint --fix` 与 `prettier --write`,`commit-msg` 跑 commitlint。克隆仓库后 `npm ci` 会通过 `prepare` 脚本自动装好钩子。
+
+**测试**放在被测代码同层的 `__tests__/` 下,覆盖率只统计有逻辑的 `src/composables` 与 `src/data` 两层(门槛 80/70/75/80,语句/分支/函数/行),组件视觉正确性由人工验收兜底,不拿数字假装覆盖。
+
 ## 贡献
 
-1. 从 `main` 切出分支
-2. 提交前跑 `npm run lint:check && npm run type-check && npm run build`
-3. 涉及视觉改动时,附上改动前后的截图
+1. 先读 **[AGENTS.md](./AGENTS.md)**——那是人与 AI 贡献者共用的硬约束清单(冻结文件、双份主题数据、不许加的依赖、提交前命令)。
+2. 从 `main` 切分支,一个 PR 只做一件事;提交信息走 Conventional Commits,钩子会拦。
+3. 涉及视觉改动时,附上改动前后的截图;改动 `public/flux/index.html` 的 PR 单独开。
+
+流程细节见 [CONTRIBUTING.md](./CONTRIBUTING.md)。
 
 ## 许可证
 

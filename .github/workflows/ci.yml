@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # commitlint 要按 base..head 逐条校验提交信息，浅克隆取不到父提交
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -29,8 +32,14 @@ jobs:
       - name: Lint
         run: npm run lint:check
 
+      - name: Format
+        run: npm run format:check
+
       - name: Type check
         run: npm run type-check
+
+      - name: Unit tests with coverage
+        run: npm run coverage
 
       - name: Build
         run: npm run build
@@ -38,3 +47,7 @@ jobs:
       # FLUX 是不参与构建的单文件，产物里必须与源文件逐字节一致
       - name: Verify FLUX page ships untouched
         run: cmp public/flux/index.html dist/flux/index.html
+
+      - name: Commit messages
+        if: github.event_name == 'pull_request'
+        run: npx commitlint --from "${{ github.event.pull_request.base.sha }}" --to "${{ github.event.pull_request.head.sha }}" --verbose

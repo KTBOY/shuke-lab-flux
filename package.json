@@ -11,8 +11,9 @@
     "url": "git+https://github.com/KTBOY/shuke-lab-flux.git"
   },
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=22.12.0"
   },
+  "packageManager": "npm@11.9.0",
   "keywords": [
     "vue3",
     "vite",
@@ -33,7 +34,12 @@
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "lint:check": "eslint .",
-    "format": "prettier --write src/",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test:unit": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "prepare": "husky",
     "assets:optimize": "node scripts/optimize-assets.mjs",
     "screenshot": "bash scripts/screenshot.sh .qoder/tmp/shot.png"
   },
@@ -43,20 +49,28 @@
     "vue-router": "^5.3.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
     "@tsconfig/node22": "^22.0.6",
     "@types/node": "^26.6.1",
     "@vitejs/plugin-vue": "^6.0.9",
+    "@vitest/coverage-v8": "^5.0.1",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.9.0",
+    "@vue/test-utils": "^2.5.1",
     "@vue/tsconfig": "^0.9.1",
     "eslint": "^10.10.0",
     "eslint-plugin-vue": "^10.11.0",
+    "husky": "^9.1.7",
     "jiti": "^2.7.0",
+    "jsdom": "^29.1.1",
+    "lint-staged": "^17.5.1",
     "npm-run-all2": "^8.0.4",
     "prettier": "^3.9.8",
     "sharp": "^0.35.4",
     "typescript": "^6.0.3",
     "vite": "^8.3.0",
+    "vitest": "^5.0.1",
     "vue-tsc": "^3.3.11"
   }
 }

@@ -1,0 +1,5 @@
+{
+  "src/**/*.{ts,vue}": ["eslint --fix --max-warnings 0", "prettier --write"],
+  "src/**/*.css": ["prettier --write"],
+  "*.{json,md,html}": ["prettier --write"]
+}
