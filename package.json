@@ -1,0 +1,61 @@
+{
+  "name": "shuke-lab-flux",
+  "version": "1.0.0",
+  "private": false,
+  "description": "shuke Lab —— FLUX 流体颜色生成器与 Vue 3 仪表盘工作台，零依赖 WebGL 演示 + Vite 构建的静态站点",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KTBOY/shuke-lab-flux.git"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "keywords": [
+    "vue3",
+    "vite",
+    "typescript",
+    "dashboard",
+    "admin-template",
+    "ui-template",
+    "webgl",
+    "color-generator",
+    "shader",
+    "fbm-noise"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "run-p type-check build-only",
+    "build-only": "vite build",
+    "preview": "vite preview",
+    "type-check": "vue-tsc --build",
+    "lint": "eslint . --fix",
+    "lint:check": "eslint .",
+    "format": "prettier --write src/",
+    "assets:optimize": "node scripts/optimize-assets.mjs",
+    "screenshot": "bash scripts/screenshot.sh .qoder/tmp/shot.png"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "vue": "^3.5.43",
+    "vue-router": "^5.3.1"
+  },
+  "devDependencies": {
+    "@tsconfig/node22": "^22.0.6",
+    "@types/node": "^26.6.1",
+    "@vitejs/plugin-vue": "^6.0.9",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.9.0",
+    "@vue/tsconfig": "^0.9.1",
+    "eslint": "^10.10.0",
+    "eslint-plugin-vue": "^10.11.0",
+    "jiti": "^2.7.0",
+    "npm-run-all2": "^8.0.4",
+    "prettier": "^3.9.8",
+    "sharp": "^0.35.4",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.0",
+    "vue-tsc": "^3.3.11"
+  }
+}

@@ -1,0 +1,50 @@
+/* Design tokens —— Crestio 仪表盘还原用变量，集中管理颜色/圆角/字号/阴影 */
+:root {
+  /* 画布与外壳 */
+  --c-canvas: #d7d8dc;
+  --c-shell-from: #edecee;
+  --c-shell-mid: #f1ece0;
+  --c-shell-to: #f9e6ab;
+
+  /* 品牌色 */
+  --c-accent: #f8d97c;
+  --c-accent-deep: #f5cf5e;
+  --c-accent-soft: #fbf2d8;
+
+  /* 中性色 */
+  --c-ink: #17171a;
+  --c-ink-2: #4b4b52;
+  --c-ink-3: #8d8d95;
+  --c-ink-4: #b6b6bc;
+  --c-dark: #1c1c20;
+  --c-dark-2: #232328;
+  --c-line: rgba(23, 23, 26, 0.09);
+  --c-line-dash: rgba(23, 23, 26, 0.14);
+  --c-surface: #ffffff;
+  --c-surface-warm: rgba(255, 253, 247, 0.72);
+  --c-panel-soft: rgba(253, 246, 226, 0.62);
+
+  /* 圆角 */
+  --r-shell: 30px;
+  --r-panel: 22px;
+  --r-card: 16px;
+  --r-pill: 999px;
+
+  /* 字号 */
+  --fs-display: 40px;
+  --fs-kpi: 34px;
+  --fs-metric: 27px;
+  --fs-title: 15px;
+  --fs-body: 13px;
+  --fs-label: 11px;
+  --fs-mini: 10px;
+
+  /* 阴影 */
+  --sd-panel: 0 18px 40px -28px rgba(23, 23, 26, 0.45);
+  --sd-float: 0 14px 28px -18px rgba(23, 23, 26, 0.5);
+
+  /* 字体 */
+  --ff-base:
+    'Inter Variable', 'Inter', 'Helvetica Neue', Helvetica, Arial, 'PingFang SC',
+    'Microsoft YaHei', sans-serif;
+}
