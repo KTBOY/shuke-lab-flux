@@ -12,7 +12,9 @@
     </header>
 
     <div class="progress__metric">
-      <p class="progress__value tnum">{{ PROGRESS_CARD.value }}<i>{{ PROGRESS_CARD.unit }}</i></p>
+      <p class="progress__value tnum">
+        {{ PROGRESS_CARD.value }}<i>{{ PROGRESS_CARD.unit }}</i>
+      </p>
       <p class="progress__caption">
         {{ PROGRESS_CARD.caption }}
         <span>{{ PROGRESS_CARD.subCaption }}</span>

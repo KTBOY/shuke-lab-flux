@@ -27,7 +27,12 @@ async function optimize({ file, width, height }) {
   const target = join(SRC_DIR, `${file}.webp`)
 
   // 原图不入库，缺哪张就跳过哪张，不阻断其余素材
-  if (!(await stat(source).then(() => true, () => false))) {
+  if (
+    !(await stat(source).then(
+      () => true,
+      () => false,
+    ))
+  ) {
     console.log(`跳过 ${file}：未找到 ${source}`)
     return
   }

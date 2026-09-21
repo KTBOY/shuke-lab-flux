@@ -100,9 +100,7 @@ const monthTitle = computed(() => {
   return `${date.getFullYear()} 年 ${date.getMonth() + 1} 月`
 })
 
-const prevMonthLabel = computed(
-  () => MONTH_LABELS[(gridStart.value.getMonth() + 11) % 12],
-)
+const prevMonthLabel = computed(() => MONTH_LABELS[(gridStart.value.getMonth() + 11) % 12])
 const nextMonthLabel = computed(() => MONTH_LABELS[(gridStart.value.getMonth() + 1) % 12])
 
 const monthDays = computed<CalendarDay[]>(() =>
