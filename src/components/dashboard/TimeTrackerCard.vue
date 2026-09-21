@@ -96,11 +96,19 @@ const progress = TIME_TRACKER_CARD.progress
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: repeating-conic-gradient(
-    rgba(23, 23, 26, 0.5) 0 0.7deg,
-    transparent 0.7deg 6deg
-  );
+  background: repeating-conic-gradient(rgba(23, 23, 26, 0.5) 0 0.7deg, transparent 0.7deg 6deg);
   mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
+  /*
+   * 动画常驻、只用 play-state 开关：若按 is-running 挂撤 animation，
+   * 暂停那一下会直接跳回 0 度，继续时又从原点重来。
+   * 一圈 60s 与表盘的「分钟」语义对齐，慢到只当呼吸用，不抢读数。
+   */
+  animation: ticks-spin var(--ticks-turn, 60s) linear infinite;
+  animation-play-state: paused;
+}
+
+.tracker__ring.is-running .tracker__ticks {
+  animation-play-state: running;
 }
 
 .tracker__center {
@@ -159,6 +167,13 @@ const progress = TIME_TRACKER_CARD.progress
 .tracker__btn--dark {
   background: var(--c-dark);
   color: #fff;
+}
+
+/* 刻度图案 6 度一格、旋转对称，转满 360 度即回到原点，linear 循环没有接缝 */
+@keyframes ticks-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes ring-breathe {

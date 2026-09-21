@@ -210,7 +210,7 @@ onScopeDispose(() => {
   align-items: center;
   gap: 16px;
   height: 46px;
-  padding: 0 6px 0 0;
+  padding: 0 10px;
   border-radius: var(--r-pill);
   background: var(--c-surface-warm);
 }
