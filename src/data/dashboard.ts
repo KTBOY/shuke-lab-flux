@@ -13,13 +13,26 @@ import type { IconName } from '@/data/icons'
 export const AVATARS = [avatar1, avatar2, avatar3, avatar4] as const
 
 /* ---------------- 顶部导航 ---------------- */
-export const NAV_ITEMS = ['仪表盘', '员工', '招聘', '设备', '应用', '薪酬', '日历', '评价'] as const
+/** 菜单里唯一真正跳转的一项，标签常量供 AppNavbar 判定渲染成路由链接 */
+export const COLOR_LAB_NAV_LABEL = '颜色实验室'
+
+export const NAV_ITEMS = [
+  '仪表盘',
+  '员工',
+  '招聘',
+  '设备',
+  '应用',
+  '薪酬',
+  '日历',
+  '评价',
+  COLOR_LAB_NAV_LABEL,
+] as const
 
 export const ACTIVE_NAV = '仪表盘'
 
 export const BRAND = 'Crestio'
 export const SETTING_LABEL = '设置'
-export const WELCOME_TITLE = '欢迎回来，Nixtio'
+export const WELCOME_TITLE = '欢迎回来'
 
 /* ---------------- 指标进度条 ---------------- */
 export type StatBarVariant = 'dark' | 'accent' | 'striped' | 'outline'
@@ -274,21 +287,16 @@ export const SCHEDULE_EVENTS: ScheduleEvent[] = [
   },
 ]
 
-/* ---------------- 颜色生成器入口 ---------------- */
+/* ---------------- 颜色实验室（Vue 版 + 旧版单文件） ---------------- */
 export interface ColorLabEntry {
+  /** 首页入口胶囊的图标 */
   icon: IconName
-  /** 入口胶囊与实验室工具栏共用的页面名 */
+  /** 两版共用的名字 */
   title: string
-  /** 一句话说明实际能力，用于工具栏副标题 */
+  /** 一句话说明实际能力 */
   desc: string
   /** 首页入口按钮文案 */
   action: string
-  /** 实验室工具栏返回按钮文案 */
-  back: string
-  /** 工具栏「新窗口打开」文案 */
-  openExternal: string
-  /** iframe 的无障碍标题，屏幕阅读器据此读出框架内容 */
-  frameTitle: string
 }
 
 export const COLOR_LAB_ENTRY: ColorLabEntry = {
@@ -296,7 +304,50 @@ export const COLOR_LAB_ENTRY: ColorLabEntry = {
   title: 'FLUX 颜色生成器',
   desc: 'WebGL 流体色彩 · 6 套配色主题，悬停与鼠标搅动会加快流速',
   action: '进入颜色实验室',
-  back: '返回仪表盘',
-  openExternal: '新窗口打开',
+}
+
+export interface FluxStudioUi {
+  /** 左栏筛选区的小标题 */
+  filtersTitle: string
+  /** 筛选栏「全部」按钮文案 */
+  filterAll: string
+  flowPause: string
+  flowResume: string
+  /** 材质交互提示，首次进入时告诉用户胶囊是可以搅动的 */
+  hint: string
+  /** 指向旧版零依赖单文件的按钮文案 */
+  toLegacy: string
+  /** 计数器的分母说明，如「套主题」 */
+  counterUnit: string
+}
+
+export const FLUX_STUDIO_UI: FluxStudioUi = {
+  filtersTitle: '配色主题',
+  filterAll: '全部',
+  flowPause: '暂停流动',
+  flowResume: '继续流动',
+  hint: '把指针放进胶囊里划动，云雾会被搅动，停下后约一秒平滑回落',
+  toLegacy: '旧版单文件页',
+  counterUnit: '套主题',
+}
+
+export interface FluxLegacyUi {
+  /** 旧版页标题，点明它是零依赖单文件而非 Vue 实现 */
+  title: string
+  /** 说明旧版与 Vue 版的关系，避免读者以为是两个不同的产品 */
+  desc: string
+  /** iframe 的无障碍标题，屏幕阅读器据此读出框架内容 */
+  frameTitle: string
+  /** 指回 Vue 版的按钮文案 */
+  toStudio: string
+  /** 直接打开裸单文件页的按钮文案 */
+  openExternal: string
+}
+
+export const FLUX_LEGACY_UI: FluxLegacyUi = {
+  title: 'FLUX 颜色生成器 · 旧版单文件',
+  desc: 'public/flux/index.html 原样发布，不参与构建、零依赖；材质与交互与 Vue 版等价',
   frameTitle: 'FLUX 流体色彩实验',
+  toStudio: '返回 Vue 版',
+  openExternal: '新窗口打开',
 }

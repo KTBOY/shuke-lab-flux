@@ -8,14 +8,26 @@
 
     <ul ref="menuRef" class="nav__menu">
       <li v-for="item in NAV_ITEMS" :key="item">
+        <!-- 唯一真跳转的一项：链接才有中键/新窗口能力，高亮由当前路由决定 -->
+        <RouterLink
+          v-if="item === COLOR_LAB_NAV_LABEL"
+          class="nav__item"
+          :class="{ 'is-active': item === activeLabel }"
+          :aria-current="item === activeLabel ? 'page' : undefined"
+          :data-label="item"
+          :to="{ name: ROUTE_NAME.colorLab }"
+        >
+          {{ item }}
+        </RouterLink>
+
         <button
-          :ref="(el) => setItemRef(el, item)"
+          v-else
           type="button"
           class="nav__item"
-          :class="{ 'is-active': item === activeNav }"
-          :aria-current="item === activeNav ? 'page' : undefined"
+          :class="{ 'is-active': item === activeLabel }"
+          :aria-current="item === activeLabel ? 'page' : undefined"
           :data-label="item"
-          @click="activeNav = item"
+          @click="onNavClick(item)"
         >
           {{ item }}
         </button>
@@ -78,39 +90,52 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, onScopeDispose, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onScopeDispose, ref, watch } from 'vue'
 import type { CSSProperties } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import AppIcon from '@/components/ui/AppIcon.vue'
-import { ACTIVE_NAV, AUTHOR, BRAND, NAV_ITEMS, SETTING_LABEL } from '@/data/dashboard'
+import {
+  ACTIVE_NAV,
+  AUTHOR,
+  BRAND,
+  COLOR_LAB_NAV_LABEL,
+  NAV_ITEMS,
+  SETTING_LABEL,
+} from '@/data/dashboard'
+import { ROUTE_NAME } from '@/router'
 
 defineOptions({ name: 'Dashboard-AppNavbar' })
+
+const route = useRoute()
+const router = useRouter()
 
 const activeNav = ref<string>(ACTIVE_NAV)
 const linksOpen = ref(false)
 const linksWrap = ref<HTMLElement | null>(null)
 
+/** 实验室两项（Vue 版与旧版单文件）共用一个入口，高亮跟着路由走；其余是模板里的占位菜单 */
+const activeLabel = computed(() =>
+  route.name === ROUTE_NAME.colorLab || route.name === ROUTE_NAME.colorLabLegacy
+    ? COLOR_LAB_NAV_LABEL
+    : activeNav.value,
+)
+
 const menuRef = ref<HTMLElement | null>(null)
 const thumbStyle = ref<CSSProperties>({})
 const isReady = ref(false)
-/** 按钮元素只在测量时读取，无需响应式 */
-const itemRefs = new Map<string, HTMLElement>()
 
 let resizeObserver: ResizeObserver | null = null
 let isDisposed = false
 
-function setItemRef(el: unknown, item: string): void {
-  if (el instanceof HTMLElement) itemRefs.set(item, el)
-  else itemRefs.delete(item)
-}
-
 /**
- * @description 量一次活动按钮，把滑块摆到它的位置。用 rect 而非 offsetLeft 以保留小数、避免累计误差；
+ * @description 量一次活动项，把滑块摆到它的位置。用 rect 而非 offsetLeft 以保留小数、避免累计误差；
  * 叠加 scrollLeft 把视觉坐标换算成滚动内容内的布局坐标，窄屏横向滚动时滑块才会跟着内容一起走。
  */
 function measureThumb(): void {
   const menu = menuRef.value
-  const item = itemRefs.get(activeNav.value)
-  if (!menu || !item) return
+  if (!menu) return
+  const item = menu.querySelector<HTMLElement>(`[data-label="${CSS.escape(activeLabel.value)}"]`)
+  if (!item) return
 
   const box = item.getBoundingClientRect()
   const base = menu.getBoundingClientRect()
@@ -119,6 +144,12 @@ function measureThumb(): void {
     width: `${box.width}px`,
     height: `${box.height}px`,
   }
+}
+
+/** 占位菜单没有对应页面，在实验室里点它等于要回仪表盘，否则看起来像点了没反应 */
+function onNavClick(item: string): void {
+  activeNav.value = item
+  if (route.name !== ROUTE_NAME.dashboard) void router.push({ name: ROUTE_NAME.dashboard })
 }
 
 onMounted(() => {
@@ -139,7 +170,7 @@ onMounted(() => {
   })
 })
 
-watch(activeNav, async () => {
+watch(activeLabel, async () => {
   await nextTick()
   measureThumb()
 })
@@ -170,7 +201,12 @@ onScopeDispose(() => {
 
 <style scoped>
 .nav {
-  display: flex;
+  /*
+   * 三列网格而非 flex + auto 外边距：flex 下 margin-inline:auto 只能在「剩余空间」里居中，
+   * 而品牌胶囊与操作区不等宽，菜单中心必然偏离视口中线；两侧 1fr 等分才天然居中。
+   */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 16px;
   height: 46px;
@@ -182,6 +218,7 @@ onScopeDispose(() => {
 .nav__brand {
   display: grid;
   place-items: center;
+  justify-self: start;
   height: 38px;
   padding: 0 22px;
   border: 1px solid var(--c-line);
@@ -196,7 +233,6 @@ onScopeDispose(() => {
   display: flex;
   align-items: center;
   gap: 2px;
-  margin-inline: auto;
   padding: 4px;
   border-radius: var(--r-pill);
   background: var(--c-dark);
@@ -234,6 +270,8 @@ onScopeDispose(() => {
   color: #b5b5ba;
   font-size: var(--fs-mini);
   letter-spacing: 0.01em;
+  /* 同一规则也作用于链接形态的颜色实验室项，去掉浏览器默认下划线 */
+  text-decoration: none;
   transition: color 0.16s ease;
 }
 
@@ -260,7 +298,7 @@ onScopeDispose(() => {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-left: auto;
+  justify-self: end;
 }
 
 .nav__links {
@@ -384,6 +422,8 @@ onScopeDispose(() => {
 
 @container stage (max-width: 720px) {
   .nav {
+    /* 下面的 order 重排与「菜单独占一行」只有 flex 才成立，桌面档改成网格后这里要显式退回 flex */
+    display: flex;
     flex-wrap: wrap;
     height: auto;
     gap: 8px;
@@ -406,7 +446,6 @@ onScopeDispose(() => {
   .nav__menu {
     order: 3;
     width: 100%;
-    margin-inline: 0;
     overflow-x: auto;
     scrollbar-width: none;
   }

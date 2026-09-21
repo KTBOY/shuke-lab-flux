@@ -2,17 +2,18 @@
 
 让固定容器里的颜色材质"活"起来 🎨
 
-一个仓库、两样东西:**FLUX 流体颜色生成器**(零依赖单文件 WebGL)与 **Crestio 仪表盘工作台**(Vue 3 + TypeScript + Vite 像素级还原)。两者打包成同一个静态站点,仪表盘首页有一条路由入口直达颜色生成器。
+一个仓库、两条线:**FLUX 流体颜色生成器**(Vue 版 + 零依赖单文件旧版)与 **Crestio 仪表盘工作台**(Vue 3 + TypeScript + Vite 像素级还原)。三者打包成同一个静态站点,共用一层导航外壳,仪表盘首页有一条路由入口直达颜色实验室。
 
 ## 站点构成
 
-| 页面               | 访问地址           | 形态                            |
-| ------------------ | ------------------ | ------------------------------- |
-| 仪表盘工作台(首页) | `/#/`              | Vue 3 + TS + Vite 构建产物      |
-| FLUX 颜色生成器    | `/#/color-lab`     | iframe 承载下面那个独立页面     |
-| FLUX 裸页          | `/flux/index.html` | 零依赖单文件,可脱离构建直接打开 |
+| 页面               | 访问地址              | 形态                                                  |
+| ------------------ | --------------------- | ----------------------------------------------------- |
+| 仪表盘工作台(首页) | `/#/`                 | Vue 3 + TS + Vite 构建产物                            |
+| FLUX 颜色实验室    | `/#/color-lab`        | Vue 版,六张胶囊各一块 WebGL 画布,融进仪表盘设计语言   |
+| FLUX 旧版          | `/#/color-lab/legacy` | iframe 承载下面那个独立单文件,材质与交互与 Vue 版等价 |
+| FLUX 裸页          | `/flux/index.html`    | 零依赖单文件,可脱离构建直接打开                       |
 
-源码位置:颜色页在 `public/flux/index.html`(Vite 原样拷贝到产物根目录,不参与构建);仪表盘在 `src/`。
+源码位置:Vue 版在 `src/views/FluxStudioView.vue` + `src/components/flux/`;旧版那个单文件在 `public/flux/index.html`(Vite 原样拷贝到产物根目录,不参与构建);仪表盘在 `src/views/DashboardView.vue` + `src/components/dashboard/`。三页共用 `src/layouts/AppShell.vue` 这层外壳。
 
 ## 效果演示
 
@@ -88,6 +89,33 @@ npm run dev        # http://localhost:5173
 flowTime += dt * (0.22 + eased * 0.28) // 0.22 静止流速,悬停加速至 0.50
 ```
 
+## 两版实现
+
+同一套材质在仓库里有两份实现,各有职责:
+
+- **旧版** `public/flux/index.html`:零依赖单文件,不参与构建、可脱离一切工具双击打开。这是本仓库的立身之本,**保持字节不变**,CI 里有一条 `cmp` 专门守着。
+- **Vue 版** `src/views/FluxStudioView.vue`:站点默认入口,融进仪表盘的设计语言与导航外壳,材质与交互逐条对齐旧版。
+
+Vue 版分层:
+
+| 文件                                  | 职责                                     |
+| ------------------------------------- | ---------------------------------------- |
+| `src/data/fluxThemes.ts`              | 六套主题的三色组与展示字段               |
+| `src/webgl/fluxShader.ts`             | GLSL 源码(与旧页内联版本逐行等价)        |
+| `src/composables/useFluidField.ts`    | 上下文生命周期、共享时钟、悬停与搅动状态 |
+| `src/components/flux/FluxCapsule.vue` | 一块画布一张卡,含降级兜底                |
+| `src/views/FluxStudioView.vue`        | 筛选栏、计数器、流动开关与栅格           |
+
+几个刻意这么做(或刻意不这么做)的地方:
+
+- **一条 rAF 时钟驱动六块画布**:六次独立 `requestAnimationFrame` 会让主线程排六遍回调。时钟在模块级按订阅数启停,没人订阅就停摆;页面切到后台也停摆,否则切回来会一次性追帧。
+- **筛选只切 `visible`,不用 `v-if` 增删卡片**:销毁组件等于销毁 WebGL 上下文,切一次筛选要重建六个,而且 `flowTime` 进度归零、花纹从头开始。隐藏时只是停掉绘制。
+- **卸载时主动 `WEBGL_lose_context.loseContext()`**:热更新会反复重建组件,等 GC 回收会先撞上浏览器的上下文上限。
+- **`devicePixelRatio` 封顶 2**,且只在尺寸真的变了时才重设 drawingBuffer——给 canvas 宽高赋值本身会清空画布。
+- **动效降级**:`prefers-reduced-motion` 下不订阅时钟,只定格渲染一帧(系统偏好优先于页内开关);页内另有「暂停流动」,暂停是退订时钟而不是让它在后台空转。
+- **WebGL 不可用或上下文被回收**时,卡片铺一层同色系 CSS 渐变,而不是留一个空白框或一张死图。
+- **主题数据存在两份**(旧页内联的 `CARDS` 与 `fluxThemes.ts`)。改主题以 TS 那份为准,旧页按需另开一次提交同步——它必须保持单文件自包含,不能反过来 import。
+
 ## 仪表盘工作台
 
 一张 HR 仪表盘设计稿的 1:1 还原,不依赖任何 UI 组件库、原子 CSS 框架与图标库:视觉细节全部由 `src/styles/tokens.css` 的设计令牌 + 手写 CSS 实现。
@@ -129,16 +157,19 @@ flowTime += dt * (0.22 + eased * 0.28) // 0.22 静止流速,悬停加速至 0.50
 
 构建产物体积(可作为后续改动的对照基线):
 
-| 资源                              | 原始 / gzip        |
-| --------------------------------- | ------------------ |
-| `index.js`(Vue + Router + 仪表盘) | 124 KB / 52 KB     |
-| `ColorLabView.js`(路由懒加载)     | 0.9 KB / 0.5 KB    |
-| `index.css`(全部手写样式)         | 28 KB / 6.5 KB     |
-| `flux/index.html`                 | 19 KB,零请求零依赖 |
+| 资源                                     | 原始 / gzip        |
+| ---------------------------------------- | ------------------ |
+| `index.js`(Vue + Router + 外壳 + 仪表盘) | 125 KB / 53 KB     |
+| `FluxStudioView.js`(路由懒加载,含着色器) | 9.8 KB / 4.8 KB    |
+| `ColorLabLegacyView.js`(路由懒加载)      | 1.0 KB / 0.6 KB    |
+| `index.css`(全部手写样式)                | 30 KB / 6.8 KB     |
+| `FluxStudioView.css`                     | 6.5 KB / 1.8 KB    |
+| `flux/index.html`                        | 19 KB,零请求零依赖 |
 
 配套做法:
 
-- 颜色生成器是路由懒加载的独立 chunk,首页不为其付出下载成本;iframe 只在进入 `/color-lab` 时才创建。
+- 两个颜色实验室页面都是路由懒加载的独立 chunk,首页不为它们付出下载成本;仪表盘静态引入以保证首屏不多一次往返。
+- **六块 WebGL 画布是这一页真正的成本所在**,不在 JS 体积而在 GPU:每块画布跑两层 5 阶 FBM,`devicePixelRatio` 封顶 2;被筛掉的卡片停掉绘制、暂停按钮直接退订时钟、页面切到后台时钟停摆。
 - 5 张 1 KB 上下的头像/设备图被 Vite 内联为 data URL,不额外发请求;30 KB 的人像图单独成文件并走内容哈希缓存。
 - Inter 以可变字体子集分发,只下载实际用到的字重与字符区间。
 - `assets/` 下的录屏 GIF/MP4 约 24 MB,只服务于 README 展示,不进入构建产物,也不会被浏览器在访问站点时下载。
@@ -149,23 +180,28 @@ flowTime += dt * (0.22 + eased * 0.28) // 0.22 静止流速,悬停加速至 0.50
 - **令牌驱动**:颜色/圆角/字号/阴影统一取自 `src/styles/tokens.css` 的 CSS 变量,组件里不写魔法色值。
 - **数据与视图分离**:文案与指标集中在 `src/data/dashboard.ts`,组件只负责渲染。
 - **BEM 命名**:样式类一律 `block__elem--mod`,`<style scoped>` 独占。
+- **外壳常驻,页面不画导航**:三个页面都挂在 `src/layouts/AppShell.vue` 下,顶部导航与页脚署名只此一份;导航高亮由当前路由推导,view 里不要再引 `AppNavbar`。
+- **重资源组件要自己收尾**:WebGL 上下文、`matchMedia` 监听、rAF 订阅一律在 `onScopeDispose` 里摘掉,新增带这类资源的组件照此办理。
 - **`public/flux/index.html` 是"外来户"**:它保持零依赖单文件,不参与构建、不接设计令牌,改动它请另开一次提交,别和仪表盘改动混在一起。
 
 ## 项目结构
 
 ```
 .
-├── public/flux/index.html   # FLUX 颜色生成器,零依赖单文件,构建时原样拷贝
+├── public/flux/index.html   # FLUX 旧版单文件,零依赖,构建时原样拷贝
 ├── src/
 │  ├── assets/img/           # 素材(人像、设备、头像)
 │  ├── components/
 │  │  ├── dashboard/         # 仪表盘业务卡片
+│  │  ├── flux/              # FluxCapsule 一块 WebGL 胶囊卡
 │  │  └── ui/                # AppIcon / AvatarStack 等无业务原子件
-│  ├── composables/          # useTimeTracker、useOnboardingTasks
-│  ├── data/                 # dashboard.ts 静态内容与类型、icons.ts 图标路径表
+│  ├── composables/          # useFluidField、useTimeTracker、useOnboardingTasks
+│  ├── data/                 # dashboard.ts 内容与类型、fluxThemes.ts 主题、icons.ts 图标表
+│  ├── layouts/AppShell.vue  # 渐变画布 + 常驻导航 + 页脚,三个页面共用
 │  ├── router/               # 路由表与路由名常量
 │  ├── styles/               # tokens.css 设计令牌、base.css 重置与复用类
-│  ├── views/                # DashboardView / ColorLabView 两个路由页面
+│  ├── views/                # DashboardView / FluxStudioView / ColorLabLegacyView
+│  ├── webgl/fluxShader.ts   # FLUX 着色器 GLSL 源码
 │  ├── App.vue
 │  └── main.ts
 ├── assets/                  # README 用的演示图与录屏

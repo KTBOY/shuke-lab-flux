@@ -31,4 +31,5 @@ coverage
 
 # 设计原图（体积过大），仓库只提交压缩后的 webp
 src/assets/img/*.png
-.qoder/tmp/
+# 本地工具产物：截图、临时浏览器 profile 等，一律不入库
+.qoder/
