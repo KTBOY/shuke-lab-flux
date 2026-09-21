@@ -2,16 +2,18 @@
 
 让固定容器里的颜色材质"活"起来 🎨
 
+**在线预览:<https://ktboy.github.io/shuke-lab-flux/>**
+
 一个仓库、两条线:**FLUX 流体颜色生成器**(Vue 版 + 零依赖单文件旧版)与 **Crestio 内容仪表盘工作台**(Vue 3 + TypeScript + Vite,不接 UI 组件库全部手写)。三者打包成同一个静态站点,共用一层导航外壳,仪表盘首页有一条路由入口直达颜色实验室。
 
 ## 站点构成
 
-| 页面               | 访问地址              | 形态                                                  |
-| ------------------ | --------------------- | ----------------------------------------------------- |
-| 仪表盘工作台(首页) | `/#/`                 | Vue 3 + TS + Vite 构建产物                            |
-| FLUX 颜色实验室    | `/#/color-lab`        | Vue 版,六张胶囊各一块 WebGL 画布,融进仪表盘设计语言   |
-| FLUX 旧版          | `/#/color-lab/legacy` | iframe 承载下面那个独立单文件,材质与交互与 Vue 版等价 |
-| FLUX 裸页          | `/flux/index.html`    | 零依赖单文件,可脱离构建直接打开                       |
+| 页面               | 访问地址                                                                           | 形态                                                  |
+| ------------------ | ---------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| 仪表盘工作台(首页) | [`/#/`](https://ktboy.github.io/shuke-lab-flux/)                                   | Vue 3 + TS + Vite 构建产物                            |
+| FLUX 颜色实验室    | [`/#/color-lab`](https://ktboy.github.io/shuke-lab-flux/#/color-lab)               | Vue 版,六张胶囊各一块 WebGL 画布,融进仪表盘设计语言   |
+| FLUX 旧版          | [`/#/color-lab/legacy`](https://ktboy.github.io/shuke-lab-flux/#/color-lab/legacy) | iframe 承载下面那个独立单文件,材质与交互与 Vue 版等价 |
+| FLUX 裸页          | [`/flux/index.html`](https://ktboy.github.io/shuke-lab-flux/flux/index.html)       | 零依赖单文件,可脱离构建直接打开                       |
 
 源码位置:Vue 版在 `src/views/FluxStudioView.vue` + `src/components/flux/`;旧版那个单文件在 `public/flux/index.html`(Vite 原样拷贝到产物根目录,不参与构建);仪表盘在 `src/views/DashboardView.vue` + `src/components/dashboard/`。三页共用 `src/layouts/AppShell.vue` 这层外壳。
 
