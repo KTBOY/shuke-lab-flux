@@ -5,6 +5,7 @@
   "description": "shuke Lab —— FLUX 流体颜色生成器与 Vue 3 仪表盘工作台，零依赖 WebGL 演示 + Vite 构建的静态站点",
   "type": "module",
   "license": "MIT",
+  "author": "ktboy-舒克",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/KTBOY/shuke-lab-flux.git"

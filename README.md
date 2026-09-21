@@ -6,11 +6,11 @@
 
 ## 站点构成
 
-| 页面 | 访问地址 | 形态 |
-| --- | --- | --- |
-| 仪表盘工作台(首页) | `/#/` | Vue 3 + TS + Vite 构建产物 |
-| FLUX 颜色生成器 | `/#/color-lab` | iframe 承载下面那个独立页面 |
-| FLUX 裸页 | `/flux/index.html` | 零依赖单文件,可脱离构建直接打开 |
+| 页面               | 访问地址           | 形态                            |
+| ------------------ | ------------------ | ------------------------------- |
+| 仪表盘工作台(首页) | `/#/`              | Vue 3 + TS + Vite 构建产物      |
+| FLUX 颜色生成器    | `/#/color-lab`     | iframe 承载下面那个独立页面     |
+| FLUX 裸页          | `/flux/index.html` | 零依赖单文件,可脱离构建直接打开 |
 
 源码位置:颜色页在 `public/flux/index.html`(Vite 原样拷贝到产物根目录,不参与构建);仪表盘在 `src/`。
 
@@ -40,18 +40,18 @@ npm run dev        # http://localhost:5173
 
 ## 可用脚本
 
-| 命令 | 作用 |
-| --- | --- |
-| `npm run dev` | 启动开发服务器 |
-| `npm run build` | 类型检查 + 生产构建 |
-| `npm run build-only` | 仅构建,跳过类型检查 |
-| `npm run preview` | 预览构建产物 |
-| `npm run type-check` | `vue-tsc` 类型检查 |
-| `npm run lint` | ESLint 检查并自动修复 |
-| `npm run lint:check` | ESLint 只检查不改写(CI 用这条) |
-| `npm run format` | Prettier 格式化 `src/` |
+| 命令                      | 作用                                                  |
+| ------------------------- | ----------------------------------------------------- |
+| `npm run dev`             | 启动开发服务器                                        |
+| `npm run build`           | 类型检查 + 生产构建                                   |
+| `npm run build-only`      | 仅构建,跳过类型检查                                   |
+| `npm run preview`         | 预览构建产物                                          |
+| `npm run type-check`      | `vue-tsc` 类型检查                                    |
+| `npm run lint`            | ESLint 检查并自动修复                                 |
+| `npm run lint:check`      | ESLint 只检查不改写(CI 用这条)                        |
+| `npm run format`          | Prettier 格式化 `src/`                                |
 | `npm run assets:optimize` | 把 `src/assets/img/*.png` 原图压成 2x 展示尺寸的 WebP |
-| `npm run screenshot` | 用本机 Edge 无头模式出图,用于与参考稿逐块比对 |
+| `npm run screenshot`      | 用本机 Edge 无头模式出图,用于与参考稿逐块比对         |
 
 ## FLUX 颜色生成器
 
@@ -85,24 +85,24 @@ npm run dev        # http://localhost:5173
 流速在 `tick(dt)` 中调整:
 
 ```js
-flowTime += dt * (0.22 + eased * 0.28);  // 0.22 静止流速,悬停加速至 0.50
+flowTime += dt * (0.22 + eased * 0.28) // 0.22 静止流速,悬停加速至 0.50
 ```
 
 ## 仪表盘工作台
 
 一张 HR 仪表盘设计稿的 1:1 还原,不依赖任何 UI 组件库、原子 CSS 框架与图标库:视觉细节全部由 `src/styles/tokens.css` 的设计令牌 + 手写 CSS 实现。
 
-| 区块 | 组件 | 说明 |
-| --- | --- | --- |
-| 顶部导航 | `AppNavbar` | 品牌标识、深色菜单胶囊组(选中项为滑动指示器)、设置下拉与用户操作 |
-| 概览指标 | `StatOverview` | 四条按数值分配宽度的进度胶囊 + 三项 KPI |
-| 作者身份卡 | `EmployeeProfileCard` | 照片 + 底部渐变遮罩上的姓名/岗位/金额 |
-| 信息手风琴 | `DeviceAccordion` | 养老金 / 设备 / 薪酬 / 福利四组数据,可展开收起 |
-| 工时进度 | `WorkProgressCard` | 七日柱状图,逐根可悬停查看当日工时 |
-| 工时计时 | `TimeTrackerCard` | 环形刻度表盘,播放/暂停真实走时 |
-| 入职概览 | `OnboardingCard` | 总完成率与三条分项进度 |
-| 入职任务 | `OnboardingTaskCard` | 深色清单卡,与概览卡同列上下排布 |
-| 日程表 | `ScheduleCard` | 月历切换、虚线网格与两条排期事件 |
+| 区块       | 组件                  | 说明                                                             |
+| ---------- | --------------------- | ---------------------------------------------------------------- |
+| 顶部导航   | `AppNavbar`           | 品牌标识、深色菜单胶囊组(选中项为滑动指示器)、设置下拉与用户操作 |
+| 概览指标   | `StatOverview`        | 四条按数值分配宽度的进度胶囊 + 三项 KPI                          |
+| 作者身份卡 | `EmployeeProfileCard` | 照片 + 底部渐变遮罩上的姓名/岗位/金额                            |
+| 信息手风琴 | `DeviceAccordion`     | 养老金 / 设备 / 薪酬 / 福利四组数据,可展开收起                   |
+| 工时进度   | `WorkProgressCard`    | 七日柱状图,逐根可悬停查看当日工时                                |
+| 工时计时   | `TimeTrackerCard`     | 环形刻度表盘,播放/暂停真实走时                                   |
+| 入职概览   | `OnboardingCard`      | 总完成率与三条分项进度                                           |
+| 入职任务   | `OnboardingTaskCard`  | 深色清单卡,与概览卡同列上下排布                                  |
+| 日程表     | `ScheduleCard`        | 月历切换、虚线网格与两条排期事件                                 |
 
 接业务时替换 `src/data/dashboard.ts` 的数据源即可,组件不持有任何文案。
 
@@ -110,11 +110,11 @@ flowTime += dt * (0.22 + eased * 0.28);  // 0.22 静止流速,悬停加速至 0.
 
 布局跟随**组件自身可用宽度**而非浏览器视口(`.stage` 为 `container-type: inline-size`),因此把仪表盘嵌进任意宽度的侧栏/抽屉都能正确降级。
 
-| 容器宽度 | 档 | 栅格 |
-| --- | --- | --- |
-| > 1080px | 桌面 | 四列命名区域,日程表跨中两列 |
-| 720–1080px | 平板 | 两列,日程表通栏 |
-| ≤ 720px | 手机 | 单列纵向堆叠 |
+| 容器宽度   | 档   | 栅格                        |
+| ---------- | ---- | --------------------------- |
+| > 1080px   | 桌面 | 四列命名区域,日程表跨中两列 |
+| 720–1080px | 平板 | 两列,日程表通栏             |
+| ≤ 720px    | 手机 | 单列纵向堆叠                |
 
 字号、圆角、内边距一律 `clamp()` 流式缩放,不在断点上跳变;`prefers-reduced-motion` 下入场动画与过渡一并降级。
 
@@ -129,12 +129,12 @@ flowTime += dt * (0.22 + eased * 0.28);  // 0.22 静止流速,悬停加速至 0.
 
 构建产物体积(可作为后续改动的对照基线):
 
-| 资源 | 原始 / gzip |
-| --- | --- |
-| `index.js`(Vue + Router + 仪表盘) | 124 KB / 52 KB |
-| `ColorLabView.js`(路由懒加载) | 0.9 KB / 0.5 KB |
-| `index.css`(全部手写样式) | 28 KB / 6.5 KB |
-| `flux/index.html` | 19 KB,零请求零依赖 |
+| 资源                              | 原始 / gzip        |
+| --------------------------------- | ------------------ |
+| `index.js`(Vue + Router + 仪表盘) | 124 KB / 52 KB     |
+| `ColorLabView.js`(路由懒加载)     | 0.9 KB / 0.5 KB    |
+| `index.css`(全部手写样式)         | 28 KB / 6.5 KB     |
+| `flux/index.html`                 | 19 KB,零请求零依赖 |
 
 配套做法:
 
@@ -185,4 +185,4 @@ flowTime += dt * (0.22 + eased * 0.28);  // 0.22 静止流速,悬停加速至 0.
 
 ## 许可证
 
-MIT
+[MIT](./LICENSE)
