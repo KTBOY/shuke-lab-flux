@@ -2,7 +2,7 @@
   "name": "shuke-lab-flux",
   "version": "1.0.0",
   "private": false,
-  "description": "shuke Lab —— FLUX 流体颜色生成器与 Vue 3 仪表盘工作台，零依赖 WebGL 演示 + Vite 构建的静态站点",
+  "description": "shuke Lab —— FLUX 流体颜色生成器与 Vue 3 内容仪表盘工作台，零依赖 WebGL 演示 + Vite 构建的静态站点",
   "type": "module",
   "license": "MIT",
   "author": "ktboy-舒克",
