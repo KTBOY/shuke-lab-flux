@@ -1,0 +1,53 @@
+name: Deploy Pages
+
+# Settings → Pages 的 Source 已选 GitHub Actions，因此这里不读分支目录，
+# 只把 npm run build 的 dist/ 作为站点产物交给 Pages。
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时刻只允许一条部署链；进行中的部署不能被后来者取消，否则会留下半个站点
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # 与 .nvmrc 单一来源对齐，不在 workflow 里另写死一个 Node 版本
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # FLUX 是不参与构建的单文件，产物里必须与源文件逐字节一致
+      - name: Verify FLUX page ships untouched
+        run: cmp public/flux/index.html dist/flux/index.html
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.output.outputs.page_url }}
+    steps:
+      - id: output
+        uses: actions/deploy-pages@v5

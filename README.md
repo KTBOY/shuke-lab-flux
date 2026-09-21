@@ -155,7 +155,7 @@ Vue 版分层:
 - 路由用**哈希模式**(`createWebHashHistory`):站点是纯静态托管,没有 SPA rewrite,history 模式下刷新 `/color-lab` 会被服务端判成 404。
 - 构建配 `base: './'`(相对路径),因此 `dist/` 既能放在域名根目录,也能放在 GitHub Pages 的项目子路径 `/shuke-lab-flux/` 下,不需要为仓库改配置。
 - 产物是普通静态目录,任意静态服务器都能跑:`npm run build && npm run preview`,或 `npx serve dist`。
-- 仓库目前**未开启** GitHub Pages。要上线时把 `dist/` 交给 Pages 即可,两种常见做法:上传 artifact 后跑 `actions/deploy-pages`,或把 `dist/` 推到 `gh-pages` 分支。
+- **GitHub Pages 已启用**,Source 为 GitHub Actions:`.github/workflows/deploy-pages.yml` 在 push 到 `main` 时跑 `npm run build`,校验冻结文件未被改动后把 `dist/` 作为 Pages 产物部署,站点在 <https://ktboy.github.io/shuke-lab-flux/>。
 
 ### 性能预算
 

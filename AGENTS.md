@@ -59,4 +59,3 @@ cmp public/flux/index.html dist/flux/index.html   # 冻结文件未被改动
 
 - `assets/` 下约 24 MB 的 GIF/MP4 直接进库、无 Git LFS,且文件名非 ASCII。
 - 旧版提交信息有无空格风格(`feat:增加图片`),commitlint 只约束新提交。
-- GitHub Pages 未开启,README 不写在线预览链接。
