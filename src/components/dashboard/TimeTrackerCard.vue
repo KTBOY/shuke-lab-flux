@@ -96,7 +96,15 @@ const progress = TIME_TRACKER_CARD.progress
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: repeating-conic-gradient(rgba(23, 23, 26, 0.5) 0 0.7deg, transparent 0.7deg 6deg);
+  /*
+   * 三层叠出时钟表盘：象限 > 整点 > 分钟。
+   * 单层 60 格是 60 阶旋转对称，一秒走过正好一个格距，图案每秒与自身重合，
+   * 转了也看不出来；压上 30°/90° 两级重刻度后对称降到 12 阶，扫动才读得出方向。
+   */
+  background:
+    repeating-conic-gradient(rgba(23, 23, 26, 0.62) 0 1.6deg, transparent 1.6deg 90deg),
+    repeating-conic-gradient(rgba(23, 23, 26, 0.45) 0 1.1deg, transparent 1.1deg 30deg),
+    repeating-conic-gradient(rgba(23, 23, 26, 0.28) 0 0.7deg, transparent 0.7deg 6deg);
   mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
   /*
    * 动画常驻、只用 play-state 开关：若按 is-running 挂撤 animation，

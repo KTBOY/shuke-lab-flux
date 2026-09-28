@@ -91,6 +91,13 @@ export const AUTHOR = {
   ] as AuthorLink[],
 }
 
+/* ---------------- 页脚技术栈 ---------------- */
+/** 只列名字不写版本号：版本随依赖升级变动，写进页脚一定会和实际构建脱节 */
+export const TECH_STACK = ['Vue 3', 'TypeScript', 'Vite', 'WebGL GLSL', 'Vitest'] as const
+
+/** 与 AGENTS.md「不新增运行时依赖」同源的自我约束，作为脚注而非卖点陈列 */
+export const STACK_NOTE = '无 UI 组件库 / 图标库 / 原子 CSS，样式取自 tokens.css 设计令牌'
+
 /* ---------------- 员工档案 ---------------- */
 export const PROFILE = {
   name: AUTHOR.name,

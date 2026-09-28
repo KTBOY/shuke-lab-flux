@@ -11,19 +11,28 @@
         <RouterView />
       </div>
 
-      <footer class="credits">
-        <span>© {{ AUTHOR.year }} {{ AUTHOR.name }}</span>
-        <span class="credits__links">
-          <a
-            v-for="link in AUTHOR.links"
-            :key="link.href"
-            :href="link.href"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {{ link.hint }}
-          </a>
-        </span>
+      <footer class="foot">
+        <div class="foot__stack">
+          <ul class="chips">
+            <li v-for="tech in TECH_STACK" :key="tech" class="chips__item">{{ tech }}</li>
+          </ul>
+          <p class="foot__note">{{ STACK_NOTE }}</p>
+        </div>
+
+        <div class="foot__credits">
+          <span>© {{ AUTHOR.year }} {{ AUTHOR.name }}</span>
+          <span class="foot__links">
+            <a
+              v-for="link in AUTHOR.links"
+              :key="link.href"
+              :href="link.href"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ link.hint }}
+            </a>
+          </span>
+        </div>
       </footer>
     </main>
   </div>
@@ -31,7 +40,7 @@
 
 <script setup lang="ts">
 import AppNavbar from '@/components/dashboard/AppNavbar.vue'
-import { AUTHOR } from '@/data/dashboard'
+import { AUTHOR, STACK_NOTE, TECH_STACK } from '@/data/dashboard'
 
 defineOptions({ name: 'App-Shell' })
 </script>
@@ -49,6 +58,8 @@ defineOptions({ name: 'App-Shell' })
 
 .shell {
   /* 渐变铺满整个视口，内容不再收进外框卡片，圆角与外投影一并去掉 */
+  display: flex;
+  flex-direction: column;
   width: 100%;
   min-width: 0;
   padding: clamp(8px, 1.4cqi, 14px);
@@ -59,33 +70,72 @@ defineOptions({ name: 'App-Shell' })
 }
 
 .shell__body {
+  /* 内容不足一屏时把视口余量吃在这里，页脚才不会悬在中间 */
+  flex: 1 0 auto;
   padding: 0 clamp(4px, 1.2cqi, 12px);
 }
 
-.credits {
+.foot {
+  margin-top: clamp(12px, 2cqi, 20px);
+}
+
+.foot__stack {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding-bottom: 12px;
+}
+
+/* 借导航胶囊的外形，但不给底色与投影：静态标签不该长得像可点按钮 */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chips__item {
+  padding: 3px 10px;
+  border: 1px solid var(--c-line);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-mini);
+  letter-spacing: 0.01em;
+  color: var(--c-ink-2);
+}
+
+.foot__note {
+  margin: 0;
+  font-size: var(--fs-mini);
+  color: var(--c-ink-3);
+}
+
+.foot__credits {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: clamp(12px, 2cqi, 20px);
   padding-top: 10px;
   border-top: 1px solid var(--c-line);
   font-size: 9.5px;
   color: var(--c-ink-3);
 }
 
-.credits__links {
+.foot__links {
   display: flex;
   gap: 14px;
 }
 
-.credits a {
+.foot__credits a {
   color: inherit;
   text-decoration: none;
   transition: color 0.16s ease;
 }
 
-.credits a:hover {
+.foot__credits a:hover {
   color: var(--c-ink);
   text-decoration: underline;
 }
