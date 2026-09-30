@@ -93,10 +93,18 @@ export const AUTHOR = {
 
 /* ---------------- 页脚技术栈 ---------------- */
 /** 只列名字不写版本号：版本随依赖升级变动，写进页脚一定会和实际构建脱节 */
-export const TECH_STACK = ['Vue 3', 'TypeScript', 'Vite', 'WebGL GLSL', 'Vitest'] as const
+export const TECH_STACK = [
+  'Vue 3',
+  'TypeScript',
+  'Vite',
+  'WebGL GLSL',
+  'sk-chart',
+  'Vitest',
+] as const
 
-/** 与 AGENTS.md「不新增运行时依赖」同源的自我约束，作为脚注而非卖点陈列 */
-export const STACK_NOTE = '无 UI 组件库 / 图标库 / 原子 CSS，样式取自 tokens.css 设计令牌'
+/** 与 AGENTS.md「不新增运行时依赖」同源的自我约束，作为脚注而非卖点陈列；图表库是该约束的唯一豁免 */
+export const STACK_NOTE =
+  '无 UI 组件库 / 图标库 / 原子 CSS，样式取自 tokens.css 设计令牌，图表由 sk-chart-duo 渲染并沿用同一套令牌'
 
 /* ---------------- 员工档案 ---------------- */
 export const PROFILE = {
@@ -163,32 +171,37 @@ export const DEFAULT_ACTIVE_PANEL = 'devices'
 /* ---------------- 工作进度卡片 ---------------- */
 export interface ProgressDay {
   label: string
-  /** 柱体高度百分比 */
-  height: number
-  /** 当日工时，用于气泡展示 */
-  hours: string
-  active?: boolean
-  /** 浅色未激活（周末）柱 */
-  faint?: boolean
+  /** 当日工时（小时），周末记 0；柱高直接由它决定，不再另设装饰性高度字段 */
+  hours: number
 }
 
 export const PROGRESS_CARD = {
   title: '工作进度',
-  value: '6.1',
   unit: '小时',
   caption: '工作时长',
   subCaption: '本周',
+  /** 悬停/聚焦某天时读给屏幕阅读器的模板 */
+  readout: '{label} {value} 小时',
 }
 
 export const PROGRESS_DAYS: ProgressDay[] = [
-  { label: '日', height: 22, hours: '0小时00分', faint: true },
-  { label: '一', height: 78, hours: '6小时40分' },
-  { label: '二', height: 58, hours: '5小时05分' },
-  { label: '三', height: 42, hours: '3小时30分' },
-  { label: '四', height: 74, hours: '6小时10分' },
-  { label: '五', height: 90, hours: '5小时23分', active: true },
-  { label: '六', height: 18, hours: '0小时00分', faint: true },
+  { label: '日', hours: 0 },
+  { label: '一', hours: 6.67 },
+  { label: '二', hours: 5.08 },
+  { label: '三', hours: 3.5 },
+  { label: '四', hours: 6.17 },
+  { label: '五', hours: 5.38 },
+  { label: '六', hours: 0 },
 ]
+
+/**
+ * 标题行的「本周日均工时」：只计工作日，周末 0 工时不进分母，
+ * 否则均值会被两个休息日拉到 3.8，与「工作时长」的语义不符。
+ */
+export const PROGRESS_WEEK_AVG: string = (
+  PROGRESS_DAYS.filter((day) => day.hours > 0).reduce((sum, day) => sum + day.hours, 0) /
+  PROGRESS_DAYS.filter((day) => day.hours > 0).length
+).toFixed(1)
 
 /* ---------------- 工时计时卡片 ---------------- */
 export const TIME_TRACKER_CARD = {
@@ -294,19 +307,16 @@ export const SCHEDULE_EVENTS: ScheduleEvent[] = [
   },
 ]
 
-/* ---------------- 颜色实验室（Vue 版 + 旧版单文件） ---------------- */
-export interface ColorLabEntry {
+/* ---------------- 二级页入口（首页 hero 右侧胶囊） ---------------- */
+export interface PageEntry {
   /** 首页入口胶囊的图标 */
   icon: IconName
-  /** 两版共用的名字 */
   title: string
-  /** 一句话说明实际能力 */
   desc: string
-  /** 首页入口按钮文案 */
   action: string
 }
 
-export const COLOR_LAB_ENTRY: ColorLabEntry = {
+export const COLOR_LAB_ENTRY: PageEntry = {
   icon: 'disc',
   title: 'FLUX 颜色生成器',
   desc: 'WebGL 流体色彩 · 6 套配色主题，悬停与鼠标搅动会加快流速',
