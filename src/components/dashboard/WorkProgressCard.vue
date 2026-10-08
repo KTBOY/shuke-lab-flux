@@ -21,7 +21,7 @@
       </p>
     </div>
 
-    <div ref="host" class="progress__chart"></div>
+    <div ref="host" class="progress__chart" :style="chartBox"></div>
 
     <p class="sr-only" aria-live="polite">{{ readout }}</p>
   </section>
@@ -37,7 +37,10 @@ import { PROGRESS_CARD, PROGRESS_DAYS, PROGRESS_WEEK_AVG } from '@/data/dashboar
 
 defineOptions({ name: 'Dashboard-WorkProgressCard' })
 
-const CHART_HEIGHT = 190
+/** 独占一行后幅面约 1400px，高度与折边宽度按新幅面重标，否则柱体塌成扁平长条、翻边看不见 */
+const CHART_HEIGHT = 250
+/** 容器高度与实例化参数同源，避免样式和 JS 各写一遍 */
+const chartBox = { height: `${CHART_HEIGHT}px` }
 /** 卡片实测宽远小于库原稿的 860，只能按 1 CSS px = 1 设计单位建设计空间 */
 const DATA: FoldBarDatum[] = PROGRESS_DAYS.map((day) => ({ label: day.label, value: day.hours }))
 const PEAK_INDEX = DATA.reduce(
@@ -88,7 +91,8 @@ function createChart(el: HTMLElement, width: number): FoldBarChart {
     theme: compactTheme(),
     padding: { top: 46, right: 6, bottom: 20, left: 6 },
     stair: { bottomOffset: 4, topOffset: 6 },
-    fold: { run: 6 },
+    // 折边宽度按幅面取比例：设计空间是 1 CSS px = 1 单位，写死值在 350 与 1400 两档必有一档失真
+    fold: { run: Math.max(4, Math.round(width / 110)) },
     axis: { ticks: [] },
     xAxis: { showGrid: false },
     state: { defaultActive: PEAK_INDEX },
@@ -142,14 +146,12 @@ onScopeDispose(() => {
 .progress {
   display: flex;
   flex-direction: column;
-  height: 100%;
   padding: 12px;
   overflow: hidden;
 }
 
 .progress__chart {
   width: 100%;
-  height: 190px;
   margin-top: auto;
 }
 

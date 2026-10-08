@@ -65,7 +65,6 @@ const progress = TIME_TRACKER_CARD.progress
 .tracker {
   display: flex;
   flex-direction: column;
-  height: 100%;
   padding: 12px;
 }
 

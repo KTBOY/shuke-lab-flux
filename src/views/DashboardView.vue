@@ -1,6 +1,6 @@
 <!--
  * @Author: zlc
- * @Description: 仪表盘视图 —— 标题行（欢迎语 + 颜色实验室入口）、指标区与四列卡片栅格（容器查询三档降级）
+ * @Description: 仪表盘视图 —— 标题行（欢迎语 + 颜色实验室入口）、指标区、三栏卡片栅格与整行工时图（容器查询三档降级）
 -->
 <template>
   <div class="dashboard">
@@ -22,15 +22,17 @@
         <DeviceAccordion />
       </div>
 
-      <WorkProgressCard class="board__cell board__cell--progress" />
-      <TimeTrackerCard class="board__cell board__cell--tracker" />
+      <div class="board__stack">
+        <TimeTrackerCard />
+        <ScheduleCard class="board__schedule" />
+      </div>
 
       <div class="board__col board__col--right">
         <OnboardingCard class="board__onboard" />
-        <OnboardingTaskCard class="board__tasks" />
+        <OnboardingTaskCard />
       </div>
 
-      <ScheduleCard class="board__cell board__cell--schedule" />
+      <WorkProgressCard class="board__progress" />
     </div>
   </div>
 </template>
@@ -123,48 +125,51 @@ defineOptions({ name: 'Dashboard-View' })
   color: var(--c-accent-deep);
 }
 
-/* —— 栅格：桌面四列，命名区域便于逐档重排 —— */
+/* —— 栅格：三栏各自独立成列，列高由内容决定 —— */
 .board {
   display: grid;
-  grid-template-columns: 1.08fr 1fr 1fr 1.02fr;
-  grid-template-rows: auto 1fr;
+  grid-template-columns: 1.08fr 2.06fr 1.02fr;
   grid-template-areas:
-    'left progress tracker right'
-    'left schedule schedule right';
-  column-gap: 12px;
-  row-gap: clamp(24px, 5cqi, 56px);
+    'left stack right'
+    'progress progress progress';
+  gap: 12px;
+  align-items: start;
   margin-top: clamp(14px, 2.4cqi, 22px);
 }
 
-.board__col {
+.board__col,
+.board__stack {
   display: flex;
   flex-direction: column;
+  gap: 12px;
+  min-width: 0;
 }
 
 .board__col--left {
   grid-area: left;
-  gap: 8px;
-  justify-content: space-between;
 }
 
 .board__col--right {
   grid-area: right;
 }
 
-.board__cell {
-  height: 100%;
+.board__stack {
+  grid-area: stack;
+  /*
+   * 中栏跟着最高那一栏走，但把多出来的高度只给日程：
+   * 它是唯一能靠"多露几格时间"消化高度的模块，计时卡 stretching 只会长出空洞。
+   */
+  align-self: stretch;
 }
 
-.board__cell--progress {
+/* 七日工时图独占一行：7 列挤在一栏宽里读不出趋势 */
+.board__progress {
   grid-area: progress;
 }
 
-.board__cell--tracker {
-  grid-area: tracker;
-}
-
-.board__cell--schedule {
-  grid-area: schedule;
+.board__schedule {
+  flex: 1;
+  min-height: 0;
 }
 
 .board__onboard {
@@ -172,55 +177,33 @@ defineOptions({ name: 'Dashboard-View' })
   height: 200px;
 }
 
-.board__tasks {
-  flex: 1;
-  margin-top: 12px;
-}
-
-/* —— 平板：两列，左列保持竖排 —— */
+/* —— 平板：左右两栏在上，中栏与进度图依次整幅落下 —— */
 @container stage (max-width: 1080px) {
   .board {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: none;
     grid-template-areas:
       'left right'
-      'progress tracker'
-      'schedule schedule';
-    row-gap: 20px;
-  }
-
-  /* 脱离桌面行的对齐约束后，卡片回到内容高度 */
-  .board__onboard {
-    height: auto;
-    min-height: 150px;
+      'stack stack'
+      'progress progress';
   }
 }
 
-/* —— 手机：单列纵向堆叠 —— */
+/* —— 手机：单列纵向堆叠，进度图仍在最后 —— */
 @container stage (max-width: 720px) {
   .board {
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       'left'
-      'progress'
-      'tracker'
+      'stack'
       'right'
-      'schedule';
-    row-gap: 16px;
-  }
-
-  .board__cell {
-    height: auto;
-  }
-
-  .board__onboard {
-    min-height: 0;
+      'progress';
   }
 }
 
 /* 首屏错峰上浮，让各模块依次入场；外壳三件套的节奏由 AppShell 负责 */
 .dashboard > *,
-.board > * {
+.board > *,
+.board__stack > * {
   animation: rise-in 0.5s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
 }
 
@@ -252,7 +235,7 @@ defineOptions({ name: 'Dashboard-View' })
   animation-delay: 0.36s;
 }
 
-.board > :nth-child(5) {
+.board__stack > :nth-child(2) {
   animation-delay: 0.4s;
 }
 </style>
