@@ -1,5 +1,5 @@
 /**
- * @Description: 漏斗图的 crestio 皮肤 —— 运行时从 tokens.css 取色，让 sk-chart 走首页既有的图形语言而非库默认蓝灰
+ * @Description: sk-chart 图表的 crestio 皮肤 —— 运行时从 tokens.css 取色，让图表走首页既有的图形语言而非库默认蓝灰
  */
 import type { ThemePack } from 'sk-chart-duo'
 
@@ -30,8 +30,6 @@ export function crestioChartTheme(): ThemePack {
   const ink2 = token('--c-ink-2')
   const ink3 = token('--c-ink-3')
   const ink4 = token('--c-ink-4')
-  const dark = token('--c-dark')
-  const dark2 = token('--c-dark-2')
   const line = token('--c-line')
   const surface = token('--c-surface')
   const panelSoft = token('--c-panel-soft')
@@ -44,8 +42,12 @@ export function crestioChartTheme(): ThemePack {
       // 闲置柱：琥珀由深到浅落回卡片底色（--c-panel-soft 的同色相）
       barGradient: {
         normal: gradient([0, accentDeep], [0.42, accent], [0.82, accentSoft], [1, panelSoft]),
-        // 高亮柱：首页"主指标"用的是深色实心胶囊（.bar--dark），末阶正是结果指标
-        active: gradient([0, dark], [0.42, dark2], [0.82, ink2], [1, ink3]),
+        /**
+         * 高亮柱不出色族，靠"下半截不化进背景"来区分：闲置柱尾部落到 --c-panel-soft 就等于消失，
+         * 高亮柱整根保住饱和度。墨色阶（--c-dark）会把峰值柱画成暖卡里唯一的黑块，
+         * 而这条渐变同时就是悬停态——等于每一根柱悬停上去都闪一次黑。
+         */
+        active: gradient([0, accentDeep], [0.55, accent], [1, accent]),
       },
       /**
        * 斜纹照抄 StatOverview 的 .bar--striped：
