@@ -9,7 +9,7 @@
 2. **主题数据存在两份**:`src/data/fluxThemes.ts` 是权威,旧页内联的 `CARDS` 是副本。新增或调整主题以 TS 为准,不要反过来。
 3. **禁止历史重写与强推**:仓库公开且已有 fork,`git push --force` / `filter-repo` / 改已有提交一律不做。
 4. **不新增运行时依赖**:没有 UI 组件库、没有图标库、没有原子 CSS 框架、没有 Pinia。加依赖要在提交说明里给理由。
-   - 唯一豁免:`sk-chart-duo`(SVG 图表库,零传递依赖)。**必须精确锁版 `0.1.0`**,不许写成 `^0.1.0`、不许被 `npm audit fix` / 升级脚本顺手动——上游仓库已把 license 改成 GPL-3.0-only 而 registry 上的 0.1.0 仍是 MIT,升级即引入 copyleft 传染。收口前不得升级,详见 `docs/sk-chart-funnel-plan.md` §5 R1。再开第二个豁免先在提交说明里写清理由。
+   - 唯一豁免:`sk-chart-duo`(SVG 图表库,零传递依赖)。**必须精确锁版 `0.1.1`**,不许写成 `^0.1.1`、不许被 `npm audit fix` / 升级脚本顺手动。0.1.1 的 license 是 GPL-3.0-only,2026-10-09 由作者本人确认接受(包与站点同属 ktboy,不存在被动传染),`docs/sk-chart-funnel-plan.md` §5 R1 的「D2 issue 落地前不升级」结论就此作废。**遗留**:`package.json` 仍写 `license: MIT`,而构建产物里已混入 GPL 代码,对外分发口径要不要一起改成 GPL-3.0-only 尚未决定。再开第二个豁免先在提交说明里写清理由。
 
 ## 代码约定
 
