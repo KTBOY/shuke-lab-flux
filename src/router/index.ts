@@ -1,11 +1,11 @@
 /**
  * @Author: zlc
- * @Description: 路由表 —— 外壳常驻，三个页面（仪表盘 / FLUX Vue 版 / FLUX 旧版单文件）挂在其下
+ * @Description: 路由表 —— 外壳常驻，三个页面（FLUX Vue 版 / 仪表盘 / FLUX 旧版单文件）挂在其下
  */
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import AppShell from '@/layouts/AppShell.vue'
-import DashboardView from '@/views/DashboardView.vue'
+import FluxStudioView from '@/views/FluxStudioView.vue'
 
 /** 路由名收口在此，组件只引用常量，不散写字面量路径 */
 export const ROUTE_NAME = {
@@ -21,15 +21,20 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        name: ROUTE_NAME.dashboard,
-        // 首屏落地视图，静态引入留在入口 chunk，避免多一次网络往返才出画面
-        component: DashboardView,
+        name: ROUTE_NAME.colorLab,
+        // 首页即实验室：静态引入留在入口 chunk，避免落地多一次网络往返才出画面
+        component: FluxStudioView,
       },
       {
+        // 实验室升为首页前的地址，站点已公开且被 README 链接过，留一条跳转避免死链
         path: 'color-lab',
-        name: ROUTE_NAME.colorLab,
-        // WebGL 材质与六张画布的开销只在这一页承担，独立成 chunk 按需下载
-        component: () => import('@/views/FluxStudioView.vue'),
+        redirect: { name: ROUTE_NAME.colorLab },
+      },
+      {
+        path: 'dashboard',
+        name: ROUTE_NAME.dashboard,
+        // 仪表盘与它的九块卡片只在点进去时才要下载
+        component: () => import('@/views/DashboardView.vue'),
       },
       {
         path: 'color-lab/legacy',

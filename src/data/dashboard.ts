@@ -16,8 +16,8 @@ export const AVATARS = [avatar1, avatar2, avatar3, avatar4] as const
 /** 菜单里唯一真正跳转的一项，标签常量供 AppNavbar 判定渲染成路由链接 */
 export const COLOR_LAB_NAV_LABEL = '颜色实验室'
 
-export const NAV_ITEMS = [
-  '仪表盘',
+/** 还没有对应页面的菜单项，暂收起来；补上页面后拼回 NAV_ITEMS 即可 */
+export const PLACEHOLDER_NAV_ITEMS = [
   '员工',
   '招聘',
   '设备',
@@ -25,8 +25,9 @@ export const NAV_ITEMS = [
   '薪酬',
   '日历',
   '评价',
-  COLOR_LAB_NAV_LABEL,
 ] as const
+
+export const NAV_ITEMS = ['仪表盘', COLOR_LAB_NAV_LABEL] as const
 
 export const ACTIVE_NAV = '仪表盘'
 
@@ -55,13 +56,38 @@ export interface KpiStat {
   icon: IconName
   value: number
   label: string
+  /** 较上周的净变化，正负决定徽标朝向 */
+  delta: number
+  /** 近七周的相对高度（0–1）。只画形状、不标读数，避免和主数值口径打架 */
+  trend: number[]
 }
 
 export const KPI_STATS: KpiStat[] = [
-  { icon: 'people', value: 78, label: '员工' },
-  { icon: 'person-plus', value: 56, label: '招聘' },
-  { icon: 'briefcase', value: 203, label: '项目' },
+  {
+    icon: 'people',
+    value: 78,
+    label: '员工',
+    delta: 6,
+    trend: [0.35, 0.45, 0.4, 0.6, 0.55, 0.8, 1],
+  },
+  {
+    icon: 'person-plus',
+    value: 56,
+    label: '招聘',
+    delta: 12,
+    trend: [0.2, 0.3, 0.5, 0.45, 0.7, 0.65, 0.9],
+  },
+  {
+    icon: 'briefcase',
+    value: 203,
+    label: '项目',
+    delta: -3,
+    trend: [0.9, 0.85, 0.8, 0.7, 0.75, 0.6, 0.55],
+  },
 ]
+
+/** 环比徽标前的说明文字，读给屏幕阅读器补语义 */
+export const KPI_DELTA_LABEL = '较上周'
 
 /* ---------------- 作者身份 ---------------- */
 export interface AuthorLink {
@@ -171,7 +197,7 @@ export const DEFAULT_ACTIVE_PANEL = 'devices'
 /* ---------------- 工作进度卡片 ---------------- */
 export interface ProgressDay {
   label: string
-  /** 当日工时（小时），周末记 0；柱高直接由它决定，不再另设装饰性高度字段 */
+  /** 当日工时（小时）；柱高直接由它决定，不再另设装饰性高度字段 */
   hours: number
 }
 
@@ -184,24 +210,61 @@ export const PROGRESS_CARD = {
   readout: '{label} {value} 小时',
 }
 
+/**
+ * 工时按真实打卡的口径取「整分钟」的小时数（4.58 = 4 小时 35 分）。
+ * 台阶设在每日 0.7～0.9 小时：落差小于 0.5 五根柱看不出高低，大于 1.5 就变成锯齿、
+ * 像数据出错而不是工作量波动。形状讲一个故事——周初收作业、周中爬到峰值、周五回落。
+ * 只列工作日：休息日没有工时，画出来只是两条贴地扁条，纯噪声。
+ */
 export const PROGRESS_DAYS: ProgressDay[] = [
-  { label: '日', hours: 0 },
-  { label: '一', hours: 6.67 },
-  { label: '二', hours: 5.08 },
-  { label: '三', hours: 3.5 },
-  { label: '四', hours: 6.17 },
-  { label: '五', hours: 5.38 },
-  { label: '六', hours: 0 },
+  { label: '一', hours: 4.58 },
+  { label: '二', hours: 5.5 },
+  { label: '三', hours: 6.25 },
+  { label: '四', hours: 6.92 },
+  { label: '五', hours: 6.08 },
 ]
 
-/**
- * 标题行的「本周日均工时」：只计工作日，周末 0 工时不进分母，
- * 否则均值会被两个休息日拉到 3.8，与「工作时长」的语义不符。
- */
+/** 标题行的「本周日均工时」：数据里只有工作日，直接取均值 */
 export const PROGRESS_WEEK_AVG: string = (
-  PROGRESS_DAYS.filter((day) => day.hours > 0).reduce((sum, day) => sum + day.hours, 0) /
-  PROGRESS_DAYS.filter((day) => day.hours > 0).length
+  PROGRESS_DAYS.reduce((sum, day) => sum + day.hours, 0) / PROGRESS_DAYS.length
 ).toFixed(1)
+
+/** 上周合计工时，环比由它现算，避免写死的差值与 PROGRESS_DAYS 漂移 */
+export const PROGRESS_PREV_TOTAL = 27.2
+
+const weekTotal = PROGRESS_DAYS.reduce((sum, day) => sum + day.hours, 0)
+const peakDay = PROGRESS_DAYS.reduce((best, day) => (day.hours > best.hours ? day : best))
+const weekAvg = weekTotal / PROGRESS_DAYS.length
+const deltaHours = weekTotal - PROGRESS_PREV_TOTAL
+
+export interface ProgressCompositionRow {
+  label: string
+  /** 占比百分比，同时决定条宽 */
+  value: number
+}
+
+/** 工时卡右侧「解读」栏：把数字翻成因果，回答"为什么是 this 周" */
+export const PROGRESS_INSIGHT = {
+  title: '解读',
+  headline: `周${peakDay.label} ${peakDay.hours.toFixed(1)} 小时是全周峰值，比日均高 ${Math.round((peakDay.hours / weekAvg - 1) * 100)}%。`,
+  detail: '周会集中在周二与周四，把这两天的整块时间各切成两段；周三起进入版本收尾，工时随之抬高。',
+  totalLabel: '本周合计',
+  total: weekTotal.toFixed(1),
+  unit: '小时',
+  compositionTitle: '工时构成',
+  composition: [
+    { label: '开发与修复', value: 54 },
+    { label: '会议与评审', value: 27 },
+    { label: '临时插入', value: 19 },
+  ] as ProgressCompositionRow[],
+}
+
+export const PROGRESS_DELTA = {
+  label: 'vs 上周',
+  dir: deltaHours >= 0 ? ('up' as const) : ('down' as const),
+  hours: `${deltaHours >= 0 ? '+' : '−'}${Math.abs(deltaHours).toFixed(1)}`,
+  percent: `${deltaHours >= 0 ? '+' : '−'}${Math.round(Math.abs((deltaHours / PROGRESS_PREV_TOTAL) * 100))}%`,
+}
 
 /* ---------------- 工时计时卡片 ---------------- */
 export const TIME_TRACKER_CARD = {
@@ -232,6 +295,38 @@ export const ONBOARDING_CARD = {
   ] as OnboardingBar[],
   /** 底部说明文案模板，{rest} 由任务清单实际数据填充 */
   footer: '还剩 {rest} 项待完成',
+}
+
+/* ---------------- 洞察卡片 ---------------- */
+export interface InsightSlide {
+  /** 大数字，允许 {占位符}，由组件按页面实际状态填充 */
+  rate: string
+  headline: string
+  detail: string
+}
+
+export const INSIGHT_CARD = {
+  chip: '洞察',
+  /** 每条洞察的停留时长（毫秒） */
+  dwell: 5000,
+  /** 三条洞察的数值全部取自本页其它卡的同一份数据，不另立口径 */
+  slides: [
+    {
+      rate: '{taskRate}%',
+      headline: '入职任务完成 {done}/{total}，比上周多 1 项。',
+      detail: '按这个节奏，首周答疑预计减少 38 次，省下 6.5 人时。',
+    },
+    {
+      rate: '{deltaPercent}',
+      headline: '本周合计 {weekTotal} 小时，环比上周 {deltaPercent}。',
+      detail: '增量几乎全落在周三之后，版本收尾把工时抬了上去。',
+    },
+    {
+      rate: '{devShare}%',
+      headline: '一半以上工时花在开发与修复。',
+      detail: '会议与评审占 {meetingShare}%，临时插入占 {insertShare}%。',
+    },
+  ] as InsightSlide[],
 }
 
 export interface TaskItem {

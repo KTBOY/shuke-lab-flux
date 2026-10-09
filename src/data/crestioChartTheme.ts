@@ -79,9 +79,10 @@ export function crestioChartTheme(): ThemePack {
       fontFamily: token('--ff-base'),
       title: { fill: ink },
       axis: { fill: ink3 },
-      // 类目与数值都遵循"闲置淡墨、高亮实墨"，与首页其它卡的层级一致
-      label: { fill: ink4, activeFill: ink },
-      number: { fill: ink4, activeFill: ink },
+      // 类目与数值都遵循"闲置淡墨、高亮实墨"；闲置档停在 ink-2：
+      // 再浅一档（ink-4 约 1.8:1）在暖底上读不出字，过不了小字 4.5:1 的对比度线
+      label: { fill: ink2, activeFill: ink },
+      number: { fill: ink2, activeFill: ink },
       grid: { stroke: line, strokeWidth: 1 },
       tooltip: {
         bg: surface,

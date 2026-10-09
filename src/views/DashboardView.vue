@@ -28,7 +28,10 @@
       </div>
 
       <div class="board__col board__col--right">
-        <OnboardingCard class="board__onboard" />
+        <div class="board__pair">
+          <OnboardingCard />
+          <InsightCard />
+        </div>
         <OnboardingTaskCard />
       </div>
 
@@ -40,6 +43,7 @@
 <script setup lang="ts">
 import DeviceAccordion from '@/components/dashboard/DeviceAccordion.vue'
 import EmployeeProfileCard from '@/components/dashboard/EmployeeProfileCard.vue'
+import InsightCard from '@/components/dashboard/InsightCard.vue'
 import OnboardingCard from '@/components/dashboard/OnboardingCard.vue'
 import OnboardingTaskCard from '@/components/dashboard/OnboardingTaskCard.vue'
 import ScheduleCard from '@/components/dashboard/ScheduleCard.vue'
@@ -128,7 +132,8 @@ defineOptions({ name: 'Dashboard-View' })
 /* —— 栅格：三栏各自独立成列，列高由内容决定 —— */
 .board {
   display: grid;
-  grid-template-columns: 1.08fr 2.06fr 1.02fr;
+  /* 右栏要并排放下入职进度与洞察卡，宽度从中栏（工时计时 + 日程）让出 */
+  grid-template-columns: 1.05fr 1.5fr 1.7fr;
   grid-template-areas:
     'left stack right'
     'progress progress progress';
@@ -162,7 +167,7 @@ defineOptions({ name: 'Dashboard-View' })
   align-self: stretch;
 }
 
-/* 七日工时图独占一行：7 列挤在一栏宽里读不出趋势 */
+/* 工作日工时图独占一行：五列挤在一栏宽里读不出趋势 */
 .board__progress {
   grid-area: progress;
 }
@@ -172,9 +177,12 @@ defineOptions({ name: 'Dashboard-View' })
   min-height: 0;
 }
 
-.board__onboard {
-  flex: none;
-  height: 200px;
+/* 入职进度与洞察卡并排：两卡同高，洞察卡靠内容把行高顶到 200 以上 */
+.board__pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
 }
 
 /* —— 平板：左右两栏在上，中栏与进度图依次整幅落下 —— */

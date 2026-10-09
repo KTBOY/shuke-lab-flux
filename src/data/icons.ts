@@ -22,6 +22,7 @@ export type IconName =
   | 'paperclip'
   | 'link'
   | 'check'
+  | 'bulb'
   | 'user'
   | 'globe'
   | 'code-branch'
@@ -99,6 +100,10 @@ export const ICON_SHAPES: Record<IconName, IconShape[]> = {
     { d: 'M13.9 10.7a4.7 4.7 0 0 0-7.1-.5l-2.8 2.8a4.7 4.7 0 0 0 6.7 6.7l1.6-1.6' },
   ],
   check: [{ d: 'm5.4 12.6 4.4 4.4 8.8-8.8' }],
+  bulb: [
+    { d: 'M12 3.2a5.8 5.8 0 0 0-3.3 10.6l-.7 1.9h8l-.7-1.9A5.8 5.8 0 0 0 12 3.2Z' },
+    { d: 'M9.9 18.6h4.2M10.9 21h2.2' },
+  ],
   user: [
     { d: 'M12 11.6a3.4 3.4 0 1 0 0-6.8 3.4 3.4 0 0 0 0 6.8Z' },
     { d: 'M5.4 20.2v-.8a4.4 4.4 0 0 1 4.4-4.4h4.4a4.4 4.4 0 0 1 4.4 4.4v.8' },

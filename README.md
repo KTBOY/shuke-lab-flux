@@ -4,16 +4,16 @@
 
 **在线预览:<https://ktboy.github.io/shuke-lab-flux/>**
 
-一个仓库、两条线:**FLUX 流体颜色生成器**(Vue 版 + 零依赖单文件旧版)与 **Crestio 内容仪表盘工作台**(Vue 3 + TypeScript + Vite,不接 UI 组件库全部手写;唯一的第三方运行时库是渲染工时柱状图的 `sk-chart-duo`)。三者打包成同一个静态站点,共用一层导航外壳,仪表盘首页有一条路由入口直达颜色实验室。
+一个仓库、两条线:**FLUX 流体颜色生成器**(Vue 版 + 零依赖单文件旧版)与 **Crestio 内容仪表盘工作台**(Vue 3 + TypeScript + Vite,不接 UI 组件库全部手写;唯一的第三方运行时库是渲染工时柱状图的 `sk-chart-duo`)。三者打包成同一个静态站点,共用一层导航外壳,**颜色实验室是站点首页**,仪表盘在 `/#/dashboard`,实验室页有一条入口过去。
 
 ## 站点构成
 
-| 页面               | 访问地址                                                                           | 形态                                                  |
-| ------------------ | ---------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| 仪表盘工作台(首页) | [`/#/`](https://ktboy.github.io/shuke-lab-flux/)                                   | Vue 3 + TS + Vite 构建产物                            |
-| FLUX 颜色实验室    | [`/#/color-lab`](https://ktboy.github.io/shuke-lab-flux/#/color-lab)               | Vue 版,六张胶囊各一块 WebGL 画布,融进仪表盘设计语言   |
-| FLUX 旧版          | [`/#/color-lab/legacy`](https://ktboy.github.io/shuke-lab-flux/#/color-lab/legacy) | iframe 承载下面那个独立单文件,材质与交互与 Vue 版等价 |
-| FLUX 裸页          | [`/flux/index.html`](https://ktboy.github.io/shuke-lab-flux/flux/index.html)       | 零依赖单文件,可脱离构建直接打开                       |
+| 页面                  | 访问地址                                                                           | 形态                                                  |
+| --------------------- | ---------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| FLUX 颜色实验室(首页) | [`/#/`](https://ktboy.github.io/shuke-lab-flux/)                                   | Vue 版,六张胶囊各一块 WebGL 画布,融进仪表盘设计语言   |
+| 仪表盘工作台          | [`/#/dashboard`](https://ktboy.github.io/shuke-lab-flux/#/dashboard)               | Vue 3 + TS + Vite 构建产物                            |
+| FLUX 旧版             | [`/#/color-lab/legacy`](https://ktboy.github.io/shuke-lab-flux/#/color-lab/legacy) | iframe 承载下面那个独立单文件,材质与交互与 Vue 版等价 |
+| FLUX 裸页             | [`/flux/index.html`](https://ktboy.github.io/shuke-lab-flux/flux/index.html)       | 零依赖单文件,可脱离构建直接打开                       |
 
 源码位置:Vue 版在 `src/views/FluxStudioView.vue` + `src/components/flux/`;旧版那个单文件在 `public/flux/index.html`(Vite 原样拷贝到产物根目录,不参与构建);仪表盘在 `src/views/DashboardView.vue` + `src/components/dashboard/`。三页共用 `src/layouts/AppShell.vue` 这层外壳。
 
@@ -124,19 +124,21 @@ Vue 版分层:
 
 ## 仪表盘工作台
 
-一个**内容仪表盘**的界面示范,不依赖任何 UI 组件库、原子 CSS 框架与图标库:视觉细节全部由 `src/styles/tokens.css` 的设计令牌 + 手写 CSS 实现,下面九块卡片没有一张来自组件库。唯一用到的第三方图表库是 `sk-chart-duo`(零传递依赖的 SVG 库),只承担「工作进度」那一块的七日柱状图,配色仍从 `tokens.css` 取值。
+一个**内容仪表盘**的界面示范,不依赖任何 UI 组件库、原子 CSS 框架与图标库:视觉细节全部由 `src/styles/tokens.css` 的设计令牌 + 手写 CSS 实现,下面十块卡片没有一张来自组件库。唯一用到的第三方图表库是 `sk-chart-duo`(零传递依赖的 SVG 库),只承担「工作进度」那一块的工作日柱状图,配色仍从 `tokens.css` 取值。
 
-| 区块       | 组件                  | 说明                                                             |
-| ---------- | --------------------- | ---------------------------------------------------------------- |
-| 顶部导航   | `AppNavbar`           | 品牌标识、深色菜单胶囊组(选中项为滑动指示器)、设置下拉与用户操作 |
-| 概览指标   | `StatOverview`        | 四条按数值分配宽度的进度胶囊 + 三项 KPI                          |
-| 作者身份卡 | `EmployeeProfileCard` | 照片 + 底部渐变遮罩上的姓名/岗位/金额                            |
-| 信息手风琴 | `DeviceAccordion`     | 养老金 / 设备 / 薪酬 / 福利四组数据,可展开收起                   |
-| 工时进度   | `WorkProgressCard`    | 七日折纸柱状图(`sk-chart-duo`),悬停与键盘左右键切换当日工时      |
-| 工时计时   | `TimeTrackerCard`     | 环形刻度表盘,播放/暂停真实走时                                   |
-| 入职概览   | `OnboardingCard`      | 总完成率与三条分项进度                                           |
-| 入职任务   | `OnboardingTaskCard`  | 深色清单卡,与概览卡同列上下排布                                  |
-| 日程表     | `ScheduleCard`        | 月历切换、虚线网格与两条排期事件                                 |
+| 区块       | 组件                   | 说明                                                             |
+| ---------- | ---------------------- | ---------------------------------------------------------------- |
+| 顶部导航   | `AppNavbar`            | 品牌标识、深色菜单胶囊组(选中项为滑动指示器)、设置下拉与用户操作 |
+| 概览指标   | `StatOverview`         | 四条按数值分配宽度的进度胶囊 + 三项 KPI(含环比徽标与七周点阵)    |
+| 作者身份卡 | `EmployeeProfileCard`  | 照片 + 底部渐变遮罩上的姓名/岗位/金额                            |
+| 信息手风琴 | `DeviceAccordion`      | 养老金 / 设备 / 薪酬 / 福利四组数据,可展开收起                   |
+| 工时进度   | `WorkProgressCard`     | 工作日折纸柱状图(`sk-chart-duo`),悬停与键盘左右键切换当日工时    |
+| 工时解读   | `ProgressInsightPanel` | 图表右侧解读栏:结论句 + 本周合计环比徽标 + 工时构成占比          |
+| 工时计时   | `TimeTrackerCard`      | 环形刻度表盘,播放/暂停真实走时                                   |
+| 入职概览   | `OnboardingCard`       | 总完成率与三条分项进度                                           |
+| 洞察卡     | `InsightCard`          | 冷色渐变轮播块,三条洞察自动翻页,底部进度段兼作切换点             |
+| 入职任务   | `OnboardingTaskCard`   | 深色清单卡,位于「入职进度 + 洞察卡」那一行的下方                 |
+| 日程表     | `ScheduleCard`         | 月历切换、虚线网格与两条排期事件                                 |
 
 接业务时替换 `src/data/dashboard.ts` 的数据源即可,组件不持有任何文案。
 
@@ -163,18 +165,19 @@ Vue 版分层:
 
 构建产物体积(可作为后续改动的对照基线):
 
-| 资源                                     | 原始 / gzip        |
-| ---------------------------------------- | ------------------ |
-| `index.js`(Vue + Router + 外壳 + 仪表盘) | 125 KB / 53 KB     |
-| `FluxStudioView.js`(路由懒加载,含着色器) | 9.8 KB / 4.8 KB    |
-| `ColorLabLegacyView.js`(路由懒加载)      | 1.0 KB / 0.6 KB    |
-| `index.css`(全部手写样式)                | 30 KB / 6.8 KB     |
-| `FluxStudioView.css`                     | 6.5 KB / 1.8 KB    |
-| `flux/index.html`                        | 19 KB,零请求零依赖 |
+| 资源                                         | 原始 / gzip        |
+| -------------------------------------------- | ------------------ |
+| `index.js`(Vue + Router + 外壳 + 颜色实验室) | 127 KB / 55 KB     |
+| `DashboardView.js`(路由懒加载,十块卡片)      | 40 KB / 14 KB      |
+| `ColorLabLegacyView.js`(路由懒加载)          | 1.0 KB / 0.6 KB    |
+| `index.css`(全部手写样式)                    | 17 KB / 4.5 KB     |
+| `DashboardView.css`                          | 25 KB / 5.4 KB     |
+| `ColorLabLegacyView.css`                     | 1.2 KB / 0.5 KB    |
+| `flux/index.html`                            | 19 KB,零请求零依赖 |
 
 配套做法:
 
-- 两个颜色实验室页面都是路由懒加载的独立 chunk,首页不为它们付出下载成本;仪表盘静态引入以保证首屏不多一次往返。
+- 首页就是颜色实验室,所以它与外壳、Vue/Router 一起进入口 chunk,落地不多一次网络往返;仪表盘与旧版页各自懒加载,不进首页才下载。
 - **六块 WebGL 画布是这一页真正的成本所在**,不在 JS 体积而在 GPU:每块画布跑两层 5 阶 FBM,`devicePixelRatio` 封顶 2;被筛掉的卡片停掉绘制、暂停按钮直接退订时钟、页面切到后台时钟停摆。
 - 5 张 1 KB 上下的头像/设备图被 Vite 内联为 data URL,不额外发请求;30 KB 的人像图单独成文件并走内容哈希缓存。
 - Inter 以可变字体子集分发,只下载实际用到的字重与字符区间。

@@ -25,6 +25,25 @@
           <strong class="kpi__value tnum">{{ kpi.value }}</strong>
         </div>
         <span class="kpi__label">{{ kpi.label }}</span>
+
+        <div class="kpi__foot">
+          <span class="kpi__delta" :class="`kpi__delta--${kpi.delta >= 0 ? 'up' : 'down'}`">
+            <span class="sr-only">{{ KPI_DELTA_LABEL }}</span>
+            <AppIcon :name="kpi.delta >= 0 ? 'chevron-up' : 'chevron-down'" :size="10" />
+            <span class="tnum">{{ signed(kpi.delta) }}</span>
+          </span>
+
+          <span class="kpi__trend" aria-hidden="true">
+            <span v-for="(column, index) in kpi.trend" :key="index" class="trend__col">
+              <i
+                v-for="row in TREND_ROWS"
+                :key="row"
+                class="trend__dot"
+                :class="{ 'is-on': row > TREND_ROWS - Math.round(column * TREND_ROWS) }"
+              ></i>
+            </span>
+          </span>
+        </div>
       </li>
     </ul>
   </section>
@@ -32,9 +51,16 @@
 
 <script setup lang="ts">
 import AppIcon from '@/components/ui/AppIcon.vue'
-import { KPI_STATS, STAT_BARS } from '@/data/dashboard'
+import { KPI_DELTA_LABEL, KPI_STATS, STAT_BARS } from '@/data/dashboard'
 
 defineOptions({ name: 'Dashboard-StatOverview' })
+
+/** 点阵的行数：列高按它取整，七列四行足够看出形状又不抢主数值 */
+const TREND_ROWS = 4
+
+function signed(value: number): string {
+  return `${value >= 0 ? '+' : '−'}${Math.abs(value)}`
+}
 </script>
 
 <style scoped>
@@ -152,6 +178,59 @@ defineOptions({ name: 'Dashboard-StatOverview' })
 .kpi__label {
   font-size: var(--fs-mini);
   color: var(--c-ink-3);
+}
+
+.kpi__foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+}
+
+.kpi__delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 6px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* 朝向由箭头给出，颜色只是加强；暖底上没有第二个语义色，降调走描边 */
+.kpi__delta--up {
+  border: 1px solid var(--c-accent-deep);
+  background: var(--c-accent-soft);
+  color: var(--c-ink);
+}
+
+.kpi__delta--down {
+  border: 1px solid var(--c-line-dash);
+  color: var(--c-ink-2);
+}
+
+.kpi__trend {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.trend__col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.trend__dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--c-line-dash);
+}
+
+.trend__dot.is-on {
+  background: var(--c-ink-2);
 }
 
 @container stage (max-width: 1080px) {

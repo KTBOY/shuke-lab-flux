@@ -1,6 +1,6 @@
 <!--
  * @Author: zlc
- * @Description: 工作进度卡片 —— 本周日均工时与七日折纸柱状图（sk-chart-duo 渲染）
+ * @Description: 工作进度卡片 —— 本周日均工时与工作日折纸柱状图（sk-chart-duo 渲染）
 -->
 <template>
   <section class="panel panel--warm progress">
@@ -11,17 +11,23 @@
       </button>
     </header>
 
-    <div class="progress__metric">
-      <p class="progress__value tnum">
-        {{ PROGRESS_WEEK_AVG }}<i>{{ PROGRESS_CARD.unit }}</i>
-      </p>
-      <p class="progress__caption">
-        {{ PROGRESS_CARD.caption }}
-        <span>{{ PROGRESS_CARD.subCaption }}</span>
-      </p>
-    </div>
+    <div class="progress__body">
+      <div class="progress__main">
+        <div class="progress__metric">
+          <p class="progress__value tnum">
+            {{ PROGRESS_WEEK_AVG }}<i>{{ PROGRESS_CARD.unit }}</i>
+          </p>
+          <p class="progress__caption">
+            {{ PROGRESS_CARD.caption }}
+            <span>{{ PROGRESS_CARD.subCaption }}</span>
+          </p>
+        </div>
 
-    <div ref="host" class="progress__chart" :style="chartBox"></div>
+        <div ref="host" class="progress__chart" :style="chartBox"></div>
+      </div>
+
+      <ProgressInsightPanel class="progress__aside" />
+    </div>
 
     <p class="sr-only" aria-live="polite">{{ readout }}</p>
   </section>
@@ -31,13 +37,14 @@
 import { onMounted, onScopeDispose, ref } from 'vue'
 import { FoldBarChart } from 'sk-chart-duo'
 import type { FoldBarDatum, ThemePack, TooltipPart } from 'sk-chart-duo'
+import ProgressInsightPanel from '@/components/dashboard/ProgressInsightPanel.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import { crestioChartTheme } from '@/data/crestioChartTheme'
 import { PROGRESS_CARD, PROGRESS_DAYS, PROGRESS_WEEK_AVG } from '@/data/dashboard'
 
 defineOptions({ name: 'Dashboard-WorkProgressCard' })
 
-/** 独占一行后幅面约 1400px，高度与折边宽度按新幅面重标，否则柱体塌成扁平长条、翻边看不见 */
+/** 图表列约占整行的 2/3（其余给解读栏），高度与折边宽度按这一档幅面定标 */
 const CHART_HEIGHT = 250
 /** 容器高度与实例化参数同源，避免样式和 JS 各写一遍 */
 const chartBox = { height: `${CHART_HEIGHT}px` }
@@ -67,9 +74,12 @@ function compactTheme(): ThemePack {
     ...pack,
     tokens: {
       ...pack.tokens,
-      number: { fontSize: 12, letterSpacing: '-0.2px' },
-      label: { fontSize: 10 },
-      tooltip: { fontSize: 10 },
+      // 必须逐组展开再覆盖：整组替换会把皮肤里的 fill 丢回库默认蓝灰，字就淡得读不出。
+      // ThemePack 的 tokens 是 DeepPartial，故用可选链展开；皮肤函数保证这些组运行时齐全。
+      number: { ...pack.tokens?.number, fontSize: 12, letterSpacing: '-0.2px' },
+      // 10px 中文在暖底上发糊，抬到 11px；五列比七列宽裕，放得下
+      label: { ...pack.tokens?.label, fontSize: 11 },
+      tooltip: { ...pack.tokens?.tooltip, fontSize: 10 },
     },
   }
 }
@@ -150,9 +160,29 @@ onScopeDispose(() => {
   overflow: hidden;
 }
 
+/* 图表与解读并排：整行只放一张图会把右半幅空出来，解读栏正好落在那儿 */
+.progress__body {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 0.92fr);
+  flex: 1;
+  gap: 14px;
+}
+
+.progress__main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 .progress__chart {
   width: 100%;
   margin-top: auto;
+}
+
+@container stage (max-width: 720px) {
+  .progress__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .progress__metric {

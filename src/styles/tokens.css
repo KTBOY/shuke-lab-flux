@@ -11,6 +11,17 @@
   --c-accent-deep: #f5cf5e;
   --c-accent-soft: #fbf2d8;
 
+  /* 洞察卡：全站唯一一块冷色渐变，色阶收在这里以免组件里散写 */
+  --c-insight-cool: #2f5fd0;
+  --c-insight-teal: #43a7a0;
+  --c-insight-warm: #f0a45c;
+  --c-insight-deep: #16224a;
+  --c-insight-glow: rgba(255, 255, 255, 0.5);
+  --c-insight-chip: rgba(255, 255, 255, 0.18);
+  --c-insight-track: rgba(255, 255, 255, 0.28);
+  --c-insight-deep-fade: rgba(22, 34, 74, 0);
+  --c-insight-glow-fade: rgba(255, 255, 255, 0);
+
   /* 中性色 */
   --c-ink: #17171a;
   --c-ink-2: #4b4b52;
