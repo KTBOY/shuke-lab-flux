@@ -34,3 +34,4 @@ src/assets/img/*.png
 # 本地工具产物：截图、临时浏览器 profile 等，一律不入库
 .qoder/
 .superpowers/
+spark-output/
