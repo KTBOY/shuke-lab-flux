@@ -6,41 +6,47 @@
   <nav class="nav">
     <span class="nav__brand">{{ BRAND }}</span>
 
-    <ul ref="menuRef" class="nav__menu">
-      <li v-for="item in NAV_ITEMS" :key="item">
-        <!-- 唯一真跳转的一项：链接才有中键/新窗口能力，高亮由当前路由决定 -->
-        <RouterLink
-          v-if="item === COLOR_LAB_NAV_LABEL"
-          class="nav__item"
-          :class="{ 'is-active': item === activeLabel }"
-          :aria-current="item === activeLabel ? 'page' : undefined"
-          :data-label="item"
-          :to="{ name: ROUTE_NAME.colorLab }"
-        >
-          {{ item }}
-        </RouterLink>
+    <div class="nav__menu-wrap" :data-at-start="atStart" :data-at-end="atEnd">
+      <ul ref="menuRef" class="nav__menu" @scroll.passive="syncEdges">
+        <li v-for="item in NAV_ITEMS" :key="item">
+          <!-- 唯一真跳转的一项：链接才有中键/新窗口能力，高亮由当前路由决定 -->
+          <RouterLink
+            v-if="item === COLOR_LAB_NAV_LABEL"
+            class="nav__item"
+            :class="{ 'is-active': item === activeLabel }"
+            :aria-current="item === activeLabel ? 'page' : undefined"
+            :data-label="item"
+            :to="{ name: ROUTE_NAME.colorLab }"
+          >
+            {{ item }}
+          </RouterLink>
 
-        <button
-          v-else
-          type="button"
-          class="nav__item"
-          :class="{ 'is-active': item === activeLabel }"
-          :aria-current="item === activeLabel ? 'page' : undefined"
-          :data-label="item"
-          @click="onNavClick(item)"
-        >
-          {{ item }}
-        </button>
-      </li>
+          <button
+            v-else
+            type="button"
+            class="nav__item"
+            :class="{ 'is-active': item === activeLabel }"
+            :aria-current="item === activeLabel ? 'page' : undefined"
+            :data-label="item"
+            @click="onNavClick(item)"
+          >
+            {{ item }}
+          </button>
+        </li>
 
-      <!-- 选中态由这块滑块承载，位置与尺寸按活动按钮实测写入内联样式 -->
-      <li
-        class="nav__thumb"
-        :class="{ 'is-ready': isReady }"
-        :style="thumbStyle"
-        aria-hidden="true"
-      ></li>
-    </ul>
+        <!-- 选中态由这块滑块承载，位置与尺寸按活动按钮实测写入内联样式 -->
+        <li
+          class="nav__thumb"
+          :class="{ 'is-ready': isReady }"
+          :style="thumbStyle"
+          aria-hidden="true"
+        ></li>
+      </ul>
+
+      <!-- 渐隐边：只在真的还能往那侧滚时出现，充当「这里还有内容」的唯一线索 -->
+      <span class="nav__edge nav__edge--left" aria-hidden="true"></span>
+      <span class="nav__edge nav__edge--right" aria-hidden="true"></span>
+    </div>
 
     <div class="nav__actions">
       <div ref="linksWrap" class="nav__links">
@@ -123,6 +129,9 @@ const activeLabel = computed(() =>
 const menuRef = ref<HTMLElement | null>(null)
 const thumbStyle = ref<CSSProperties>({})
 const isReady = ref(false)
+/** 两侧渐隐的开关。初始全 true（= 不显示），装不下时由 syncEdges 翻成 false */
+const atStart = ref(true)
+const atEnd = ref(true)
 
 let resizeObserver: ResizeObserver | null = null
 let isDisposed = false
@@ -143,6 +152,33 @@ function measureThumb(): void {
     transform: `translate3d(${box.left - base.left + menu.scrollLeft}px, ${box.top - base.top}px, 0)`,
     width: `${box.width}px`,
     height: `${box.height}px`,
+  }
+  syncEdges()
+}
+
+/** 算两侧还有没有内容可滚。宽度变化也会走到这里（复用同一个 ResizeObserver） */
+function syncEdges(): void {
+  const menu = menuRef.value
+  if (!menu) return
+  const max = menu.scrollWidth - menu.clientWidth
+  atStart.value = menu.scrollLeft <= 1
+  atEnd.value = menu.scrollLeft >= max - 1
+}
+
+/** 切换菜单项时把活动项滚进视野，否则窄屏下滑块会停在看不见的地方 */
+function revealActive(): void {
+  const menu = menuRef.value
+  if (!menu) return
+  const item = menu.querySelector<HTMLElement>(`[data-label="${CSS.escape(activeLabel.value)}"]`)
+  if (!item) return
+
+  const viewStart = menu.scrollLeft
+  const viewEnd = viewStart + menu.clientWidth
+  if (item.offsetLeft < viewStart || item.offsetLeft + item.offsetWidth > viewEnd) {
+    menu.scrollTo({
+      left: Math.max(0, item.offsetLeft - (menu.clientWidth - item.offsetWidth) / 2),
+      behavior: 'smooth',
+    })
   }
 }
 
@@ -172,6 +208,7 @@ onMounted(() => {
 
 watch(activeLabel, async () => {
   await nextTick()
+  revealActive()
   measureThumb()
 })
 
@@ -206,7 +243,7 @@ onScopeDispose(() => {
    * 而品牌胶囊与操作区不等宽，菜单中心必然偏离视口中线；两侧 1fr 等分才天然居中。
    */
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr minmax(0, auto) 1fr;
   align-items: center;
   gap: 16px;
   height: 46px;
@@ -228,19 +265,65 @@ onScopeDispose(() => {
   letter-spacing: -0.01em;
 }
 
+/* 菜单组在任何宽度下都只有一行，装不下就横向滚，绝不让文字在 46px 胶囊里换行被裁 */
+.nav__menu-wrap {
+  position: relative;
+  min-width: 0;
+}
+
 .nav__menu {
   position: relative;
   display: flex;
   align-items: center;
   gap: 2px;
+  min-width: 0;
   padding: 4px;
+  overflow-x: auto;
   border-radius: var(--r-pill);
   background: var(--c-dark);
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.nav__menu::-webkit-scrollbar {
+  display: none;
 }
 
 .nav__menu > li {
   position: relative;
   z-index: 1;
+  flex: none;
+}
+
+/*
+ * 渐隐边压在滚动内容之上，且只在还能往那一侧滚时出现：
+ * 滚动条已隐藏，这是「这里还有菜单项」的唯一线索。
+ */
+.nav__edge {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  z-index: 2;
+  width: 26px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(90deg, var(--c-dark), transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+
+.nav__edge--left {
+  left: 3px;
+}
+
+.nav__edge--right {
+  right: 3px;
+  background: linear-gradient(-90deg, var(--c-dark), transparent);
+}
+
+.nav__menu-wrap[data-at-start='false'] .nav__edge--left,
+.nav__menu-wrap[data-at-end='false'] .nav__edge--right {
+  opacity: 1;
 }
 
 /* 选中态滑块：位移与宽高由 JS 测量活动按钮后写入内联样式，压在文字层下方 */
@@ -270,6 +353,7 @@ onScopeDispose(() => {
   color: #b5b5ba;
   font-size: var(--fs-mini);
   letter-spacing: 0.01em;
+  white-space: nowrap;
   /* 同一规则也作用于链接形态的颜色实验室项，去掉浏览器默认下划线 */
   text-decoration: none;
   transition: color 0.16s ease;
@@ -314,6 +398,7 @@ onScopeDispose(() => {
   border-radius: var(--r-pill);
   background: var(--c-surface);
   font-size: var(--fs-mini);
+  white-space: nowrap;
   transition: color 0.16s ease;
 }
 
@@ -442,25 +527,14 @@ onScopeDispose(() => {
     order: 2;
   }
 
-  /* 菜单组独占一行，超出部分横向滚动而不是压缩变形 */
-  .nav__menu {
+  /* 菜单组独占一行（横向滚动已在基础样式里统一处理） */
+  .nav__menu-wrap {
     order: 3;
     width: 100%;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .nav__menu::-webkit-scrollbar {
-    display: none;
-  }
-
-  .nav__menu > li {
-    flex: none;
   }
 
   .nav__item {
     padding: 6px 13px;
-    white-space: nowrap;
   }
 
   .nav__setting {
