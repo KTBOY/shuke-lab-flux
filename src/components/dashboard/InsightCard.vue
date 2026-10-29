@@ -139,17 +139,10 @@ onScopeDispose(() => {
   gap: 8px;
   min-height: 200px;
   padding: 14px;
-  color: #fff;
-  /* 底部先把白字落脚处压回深墨，再让右上高光与冷暖斜切盖上去 */
-  background:
-    linear-gradient(to top, var(--c-insight-deep) 0%, var(--c-insight-deep-fade) 56%),
-    radial-gradient(118% 86% at 90% 4%, var(--c-insight-glow) 0%, var(--c-insight-glow-fade) 46%),
-    linear-gradient(
-      146deg,
-      var(--c-insight-cool) 0%,
-      var(--c-insight-teal) 48%,
-      var(--c-insight-warm) 100%
-    );
+  color: var(--c-on-dark);
+  /* 深墨展示带：与入职任务卡同一档暗面，强调色只落在大数字上 */
+  background: var(--c-dark);
+  border-color: var(--c-hairline-dark);
 }
 
 /* 颗粒用内联 SVG 的 feTurbulence 生成，不为一层噪点加依赖或加文件 */
@@ -176,7 +169,8 @@ onScopeDispose(() => {
   align-self: flex-start;
   padding: 3px 8px;
   border-radius: var(--r-pill);
-  background: var(--c-insight-chip);
+  background: var(--c-dark-2);
+  color: var(--c-on-dark-soft);
   font-size: var(--fs-label);
   font-weight: 500;
   letter-spacing: 0.01em;
@@ -204,6 +198,7 @@ onScopeDispose(() => {
 
 .insight__rate {
   margin: 0;
+  color: var(--c-accent);
   font-size: var(--fs-metric);
   font-weight: 300;
   letter-spacing: -0.02em;
@@ -226,9 +221,9 @@ onScopeDispose(() => {
 
 .insight__detail {
   margin: 0;
+  color: var(--c-on-dark-soft);
   font-size: var(--fs-label);
   line-height: 1.5;
-  opacity: 0.86;
 }
 
 .insight__dots {
@@ -249,7 +244,7 @@ onScopeDispose(() => {
   display: block;
   height: 4px;
   border-radius: var(--r-pill);
-  background: var(--c-insight-track);
+  background: var(--c-dark-2);
   transition: background 0.2s ease;
 }
 
@@ -258,7 +253,7 @@ onScopeDispose(() => {
   height: 100%;
   width: 0;
   border-radius: inherit;
-  background: #fff;
+  background: var(--c-accent);
   transition: width 0.32s cubic-bezier(0.2, 0.7, 0.3, 1);
 }
 
@@ -267,7 +262,7 @@ onScopeDispose(() => {
 }
 
 .dot:focus-visible {
-  outline: 2px solid #fff;
+  outline: 2px solid var(--c-on-dark);
   outline-offset: 3px;
   border-radius: var(--r-pill);
 }

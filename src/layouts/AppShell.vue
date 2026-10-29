@@ -57,16 +57,13 @@ defineOptions({ name: 'App-Shell' })
 }
 
 .shell {
-  /* 渐变铺满整个视口，内容不再收进外框卡片，圆角与外投影一并去掉 */
+  /* 平铺暖白画布：氛围渐变锚在视口上，内容不足一屏时下半屏会露出高饱和色块，故整层改实色 */
   display: flex;
   flex-direction: column;
   width: 100%;
   min-width: 0;
   padding: clamp(8px, 1.4cqi, 14px);
-  background:
-    radial-gradient(115% 135% at 94% 100%, var(--c-shell-to) 0%, rgba(249, 230, 171, 0) 62%),
-    radial-gradient(95% 120% at 74% 92%, #f7e9c0 0%, rgba(247, 233, 192, 0) 60%),
-    linear-gradient(128deg, var(--c-shell-from) 0%, #f0eee9 42%, #f6ecd2 100%);
+  background: var(--c-canvas);
 }
 
 .shell__body {

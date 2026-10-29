@@ -78,7 +78,8 @@ const { tasks, doneCount, total, toggle } = useOnboardingTasks()
   padding: 16px 14px 14px;
   border-radius: var(--r-panel);
   background: var(--c-dark-2);
-  color: #fff;
+  color: var(--c-on-dark);
+  border-color: var(--c-hairline-dark);
   box-shadow: var(--sd-float);
 }
 
@@ -156,7 +157,7 @@ const { tasks, doneCount, total, toggle } = useOnboardingTasks()
 }
 
 .task.is-done .task__name {
-  color: #fff;
+  color: var(--c-on-dark);
   /* 文字与圆圈同起同收，读起来是"这一行完成了"，而不是几个属性各改各的 */
   transition: color var(--dur-fill) var(--ease) var(--at-fill);
 }

@@ -32,18 +32,18 @@ export function crestioChartTheme(): ThemePack {
   const ink4 = token('--c-ink-4')
   const line = token('--c-line')
   const surface = token('--c-surface')
-  const panelSoft = token('--c-panel-soft')
+  const surfaceCard = token('--c-surface-card')
 
   // 形参类型让字面量按元组而非 number[] 推断，省掉每处 as const
   const gradient = (...pairs: Array<[number, string]>): GradientStop[] => pairs
 
   return {
     style: {
-      // 闲置柱：琥珀由深到浅落回卡片底色（--c-panel-soft 的同色相）
+      // 闲置柱：琥珀由深到浅落回卡片底色（--c-surface-card 的同色相）
       barGradient: {
-        normal: gradient([0, accentDeep], [0.42, accent], [0.82, accentSoft], [1, panelSoft]),
+        normal: gradient([0, accentDeep], [0.42, accent], [0.82, accentSoft], [1, surfaceCard]),
         /**
-         * 高亮柱不出色族，靠"下半截不化进背景"来区分：闲置柱尾部落到 --c-panel-soft 就等于消失，
+         * 高亮柱不出色族，靠"下半截不化进背景"来区分：闲置柱尾部落到 --c-surface-card 就等于消失，
          * 高亮柱整根保住饱和度。墨色阶（--c-dark）会把峰值柱画成暖卡里唯一的黑块，
          * 而这条渐变同时就是悬停态——等于每一根柱悬停上去都闪一次黑。
          */

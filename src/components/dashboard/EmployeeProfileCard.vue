@@ -58,7 +58,7 @@ defineOptions({ name: 'Dashboard-EmployeeProfileCard' })
 .profile__name {
   font-size: 15px;
   font-weight: 500;
-  color: #fff;
+  color: var(--c-on-dark);
   letter-spacing: -0.01em;
 }
 
@@ -75,7 +75,7 @@ defineOptions({ name: 'Dashboard-EmployeeProfileCard' })
   border: 1px solid rgba(255, 255, 255, 0.55);
   border-radius: var(--r-pill);
   background: rgba(255, 255, 255, 0.14);
-  color: #fff;
+  color: var(--c-on-dark);
   font-size: var(--fs-mini);
   font-weight: 500;
   backdrop-filter: blur(4px);

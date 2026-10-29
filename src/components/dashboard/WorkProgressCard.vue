@@ -3,7 +3,7 @@
  * @Description: 工作进度卡片 —— 本周日均工时与工作日折纸柱状图（sk-chart-duo 渲染）
 -->
 <template>
-  <section class="panel panel--warm progress">
+  <section class="panel progress">
     <header class="panel__head">
       <h2 class="panel__title">{{ PROGRESS_CARD.title }}</h2>
       <button type="button" class="icon-round" aria-label="查看工时详情">

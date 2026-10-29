@@ -236,7 +236,7 @@ function shiftMonth(step: number): void {
 
 .event--dark {
   background: var(--c-dark);
-  color: #fff;
+  color: var(--c-on-dark);
   --avatar-ring: var(--c-dark);
 }
 

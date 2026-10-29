@@ -3,7 +3,7 @@
  * @Description: 工时计时卡片 —— 环形进度 + 工时读数，播放/暂停控制真实计时
 -->
 <template>
-  <section class="panel panel--warm tracker">
+  <section class="panel tracker">
     <header class="panel__head">
       <h2 class="panel__title">{{ TIME_TRACKER_CARD.title }}</h2>
       <button type="button" class="icon-round" aria-label="查看计时详情">
@@ -173,7 +173,7 @@ const progress = TIME_TRACKER_CARD.progress
 
 .tracker__btn--dark {
   background: var(--c-dark);
-  color: #fff;
+  color: var(--c-on-dark);
 }
 
 /* 刻度图案 6 度一格、旋转对称，转满 360 度即回到原点，linear 循环没有接缝 */

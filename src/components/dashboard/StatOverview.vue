@@ -119,7 +119,7 @@ function signed(value: number): string {
 
 .bar--dark {
   background: var(--c-dark);
-  color: #fff;
+  color: var(--c-on-dark);
 }
 
 .bar--accent {

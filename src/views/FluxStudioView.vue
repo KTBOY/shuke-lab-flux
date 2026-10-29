@@ -29,7 +29,7 @@
     </header>
 
     <div class="body">
-      <aside class="rail panel panel--warm">
+      <aside class="rail panel">
         <h2 class="rail__title">{{ FLUX_STUDIO_UI.filtersTitle }}</h2>
 
         <ul class="filters">
@@ -317,7 +317,7 @@ const counterText = computed(() => `${pad(visibleIds.value.size)} / ${pad(FLUX_T
 }
 
 .filter.is-active .filter__cn {
-  color: var(--c-ink-3);
+  color: var(--c-ink-4);
 }
 
 .filter.is-active .filter__dot {

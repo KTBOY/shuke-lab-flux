@@ -3,7 +3,7 @@
  * @Description: 入职进度概览卡 —— 总完成率、三条分项进度与剩余任务说明
 -->
 <template>
-  <section class="panel panel--warm onboard">
+  <section class="panel onboard">
     <header class="onboard__head">
       <h2 class="panel__title">{{ ONBOARDING_CARD.title }}</h2>
       <strong class="onboard__rate tnum">{{ ONBOARDING_CARD.rate }}%</strong>
@@ -92,7 +92,7 @@ const footerText = computed(() => ONBOARDING_CARD.footer.replace('{rest}', Strin
 
 .onboard__bar--dark {
   background: var(--c-dark);
-  color: #fff;
+  color: var(--c-on-dark);
 }
 
 .onboard__bar--plain {

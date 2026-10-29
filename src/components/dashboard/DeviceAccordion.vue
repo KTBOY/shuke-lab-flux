@@ -171,8 +171,9 @@ function isOpen(key: string): boolean {
   gap: 10px;
   padding: 8px;
   margin-bottom: 8px;
+  border: 1px solid var(--c-hairline);
   border-radius: 12px;
-  background: var(--c-panel-soft);
+  background: var(--c-surface);
 }
 
 .device__img {

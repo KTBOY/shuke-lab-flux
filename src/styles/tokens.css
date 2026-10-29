@@ -1,42 +1,33 @@
-/* Design tokens —— Crestio 仪表盘还原用变量，集中管理颜色/圆角/字号/阴影 */
+/* Design tokens —— 表面阶梯与色阶对齐 claude DESIGN.md，集中管理颜色/圆角/字号/阴影 */
 :root {
-  /* 画布与外壳 */
-  --c-canvas: #d7d8dc;
-  --c-shell-from: #edecee;
-  --c-shell-mid: #f1ece0;
-  --c-shell-to: #f9e6ab;
+  /* 表面阶梯：暖白画布 → 暖灰卡 → 白色控件 → 深墨展示带，层级靠实色明度差而非阴影 */
+  --c-canvas: #faf9f5;
+  --c-surface-card: #efe9de;
+  --c-hairline: #e6dfd8;
+  /* 深墨面上的 1px 微亮描边：暗卡不靠阴影也能和暖白画布分出边界 */
+  --c-hairline-dark: rgba(250, 249, 245, 0.1);
+  --c-on-dark: #faf9f5;
+  --c-on-dark-soft: #a09d96;
 
   /* 品牌色 */
   --c-accent: #f8d97c;
   --c-accent-deep: #f5cf5e;
   --c-accent-soft: #fbf2d8;
 
-  /* 洞察卡：全站唯一一块冷色渐变，色阶收在这里以免组件里散写 */
-  --c-insight-cool: #2f5fd0;
-  --c-insight-teal: #43a7a0;
-  --c-insight-warm: #f0a45c;
-  --c-insight-deep: #16224a;
-  --c-insight-glow: rgba(255, 255, 255, 0.5);
-  --c-insight-chip: rgba(255, 255, 255, 0.18);
-  --c-insight-track: rgba(255, 255, 255, 0.28);
-  --c-insight-deep-fade: rgba(22, 34, 74, 0);
-  --c-insight-glow-fade: rgba(255, 255, 255, 0);
-
   /* 中性色 */
   --c-ink: #17171a;
   --c-ink-2: #4b4b52;
-  --c-ink-3: #8d8d95;
+  /* 暖灰三档：落在暖灰卡上仍有 4.8:1，白卡与画布上更高 */
+  --c-ink-3: #66655f;
   --c-ink-4: #b6b6bc;
-  --c-dark: #1c1c20;
-  --c-dark-2: #232328;
+  --c-dark: #181715;
+  --c-dark-2: #252320;
   --c-line: rgba(23, 23, 26, 0.09);
   --c-line-dash: rgba(23, 23, 26, 0.14);
   --c-surface: #ffffff;
   --c-surface-warm: rgba(255, 253, 247, 0.72);
-  --c-panel-soft: rgba(253, 246, 226, 0.62);
 
   /* 圆角 */
-  --r-shell: 30px;
   --r-panel: 22px;
   --r-card: 16px;
   --r-pill: 999px;
@@ -50,9 +41,9 @@
   --fs-label: 11px;
   --fs-mini: 10px;
 
-  /* 阴影 */
-  --sd-panel: 0 18px 40px -28px rgba(23, 23, 26, 0.45);
-  --sd-float: 0 14px 28px -18px rgba(23, 23, 26, 0.5);
+  /* 阴影：色块优先、阴影极少，只用来把白色控件从暖灰卡上抬起来 */
+  --sd-panel: 0 1px 3px rgba(20, 20, 19, 0.08);
+  --sd-float: 0 1px 2px rgba(20, 20, 19, 0.06);
 
   /* 字体 */
   --ff-base:

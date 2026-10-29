@@ -370,7 +370,7 @@ onScopeDispose(() => {
 }
 
 .nav__item:hover {
-  color: #fff;
+  color: var(--c-on-dark);
 }
 
 .nav__item.is-active {
