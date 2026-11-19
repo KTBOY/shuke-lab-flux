@@ -84,6 +84,24 @@ describe('useCountUp', () => {
     scope.stop()
   })
 
+  it('落定前 finalText 恒为空，落定那一刻一次性写入终值（aria-live 只播报终值）', () => {
+    const { text, settled, finalText, scope } = withCountUp(78, { duration: 1000 })
+
+    expect(settled.value).toBe(false)
+    expect(finalText.value).toBe('')
+
+    stepFrames(0, 500)
+    /* 动画途中展示文案在变，但 live 专用文案不跟着逐帧写 */
+    expect(text.value).not.toBe('0')
+    expect(settled.value).toBe(false)
+    expect(finalText.value).toBe('')
+
+    stepFrames(1000)
+    expect(settled.value).toBe(true)
+    expect(finalText.value).toBe('78')
+    scope.stop()
+  })
+
   it('减动效时不排帧，直接显示终值', () => {
     window.matchMedia = (query: string): MediaQueryList =>
       ({
@@ -97,10 +115,13 @@ describe('useCountUp', () => {
         dispatchEvent: () => false,
       }) as unknown as MediaQueryList
 
-    const { value, text, scope } = withCountUp(78)
+    const { value, text, settled, finalText, scope } = withCountUp(78)
 
     expect(value.value).toBe(78)
     expect(text.value).toBe('78')
+    /* 减动效直达终值同样算落定，live 区拿到的就是终值 */
+    expect(settled.value).toBe(true)
+    expect(finalText.value).toBe('78')
     expect(rafQueue.size).toBe(0)
     scope.stop()
   })

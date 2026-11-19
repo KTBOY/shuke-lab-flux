@@ -1,11 +1,13 @@
 /**
  * @Author: zlc
  * @Description: FLUX → 仪表盘主题桥接单测 —— 映射口径（哪色去哪个令牌、混白比例）是这里的契约，
- *               期望值全部手算写死，桥接规则一改就必须先改这份用例说明理由
+ *               期望值以手算写死为主；深端这类「由另一映射派生」的期望直接用混合函数派生，
+ *               不另抄一份结果常数，免得实现与用例两处口径漂移。桥接规则一改就必须先改这份用例说明理由
  */
 import { describe, expect, it } from 'vitest'
 import { FLUX_THEMES } from '@/data/fluxThemes'
 import {
+  ACCENT_DEEP_SHADE,
   BRIDGE_TOKEN_NAMES,
   fluxRgbToHex,
   fluxThemeToCssText,
@@ -60,11 +62,15 @@ describe('fluxThemeToTokens', () => {
     }
   })
 
-  it('AURORA 按定死口径映射：中间色作主色、首色作深端、尾色混白作浅端与星图色', () => {
+  it('AURORA 按定死口径映射：中间色作主色、主色同色深阶作深端、尾色混白作浅端与星图色', () => {
     const tokens = fluxThemeToTokens(aurora)
-    // colors[1] = [0.18, 0.48, 1.0]，colors[0] = [0.08, 0.88, 0.58]，手算见 fluxRgbToHex 用例
+    // colors[1] = [0.18, 0.48, 1.0]，手算见 fluxRgbToHex 用例
     expect(tokens['--c-accent']).toBe('#2e7aff')
-    expect(tokens['--c-accent-deep']).toBe('#14e094')
+    // 深端不再取 colors[0]（绿 #14e094），而是 accent 向黑混合 ACCENT_DEEP_SHADE 的同色深阶：
+    // [0.18, 0.48, 1.0] × (1 − 0.2) = [0.144, 0.384, 0.8]，期望由混合函数派生而非另抄一份结果
+    expect(tokens['--c-accent-deep']).toBe(
+      fluxRgbToHex(mixFluxRgb(aurora.colors[1], [0, 0, 0], ACCENT_DEEP_SHADE)),
+    )
     // colors[2] = [0.55, 0.25, 0.95] 向白混 88% → [0.946, 0.91, 0.994]
     expect(tokens['--c-accent-soft']).toBe('#f1e8fd')
     expect(tokens['--star-accent']).toBe('#8c40f2')
@@ -77,7 +83,10 @@ describe('fluxThemeToTokens', () => {
     for (const theme of FLUX_THEMES) {
       const tokens = fluxThemeToTokens(theme)
       expect(tokens['--c-accent']).toBe(fluxRgbToHex(theme.colors[1]))
-      expect(tokens['--c-accent-deep']).toBe(fluxRgbToHex(theme.colors[0]))
+      /* 深端与主色同源同色相：由 colors[1] 向黑混合派生，与 colors[0] 无关 */
+      expect(tokens['--c-accent-deep']).toBe(
+        fluxRgbToHex(mixFluxRgb(theme.colors[1], [0, 0, 0], ACCENT_DEEP_SHADE)),
+      )
       expect(tokens['--star-accent']).toBe(fluxRgbToHex(theme.colors[2]))
     }
   })

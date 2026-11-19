@@ -41,23 +41,24 @@ export const WELCOME_TITLE = '欢迎回来'
 /** 标题行的时间基线：与日程卡锚定周（CALENDAR.anchor 所在周的周一至周五）对齐，给全屏一个坐标系 */
 export const DASHBOARD_WEEK_LABEL = '本周 · 9月23日–27日'
 
-/* ---------------- 指标进度条 ---------------- */
-export type StatBarVariant = 'dark' | 'accent' | 'striped' | 'outline'
+/** 示例数据角标：本屏数据全部是静态演示数据，整屏与日程卡共用这一枚标记，不另写第二份文案 */
+export const SAMPLE_BADGE_LABEL = '示例数据'
 
+/* ---------------- 指标进度条 ---------------- */
 export interface StatBar {
   label: string
-  /** 百分比数值，同时决定胶囊宽度 */
+  /** 百分比数值，同时决定轨道内填充的长度 */
   value: number
-  variant: StatBarVariant
   /** 一词基线：这个百分比的分母是谁（占月计划 / 占季度目标……），与数值同屏出现 */
   baseline: string
 }
 
+/* 四条胶囊同一种轨道 + 同一种填充，差异只由数值（填充长度）表达，不再各换一种画法 */
 export const STAT_BARS: StatBar[] = [
-  { label: '面试量', value: 15, variant: 'dark', baseline: '占月计划' },
-  { label: '已录用', value: 15, variant: 'accent', baseline: '占季度目标' },
-  { label: '项目工时', value: 60, variant: 'striped', baseline: '占总工时' },
-  { label: '产出比', value: 10, variant: 'outline', baseline: '占月目标' },
+  { label: '面试量', value: 15, baseline: '占月计划' },
+  { label: '已录用', value: 15, baseline: '占季度目标' },
+  { label: '项目工时', value: 60, baseline: '占总工时' },
+  { label: '产出比', value: 10, baseline: '占月目标' },
 ]
 
 /** 指标定性：delta 上不上色看含义不看方向，计数类涨跌无好坏一律 neutral */
@@ -370,6 +371,10 @@ export const ONBOARDING_TASKS = {
   title: '入职任务清单',
   /** 卡头未完成计数标记的文案模板，{rest} 由清单实际状态填充；强调色只给它 */
   restChip: '还剩 {rest} 项',
+  /** 全部完成时的空状态文案：清单还在（可点回），但「待办」一栏已经空了 */
+  allDoneLabel: '全部完成',
+  /** 清单一条都没有时的空状态文案 */
+  emptyLabel: '暂无任务',
   /* 总数不再单列字段：一律以 items.length 为准，清单几行就是几项，不留幻影项 */
   items: [
     { icon: 'message', title: '入职面试', time: '9月13日 08:30', done: true },
@@ -395,19 +400,25 @@ export const CALENDAR = {
   anchor: new Date(2024, 8, 23),
   /** 可视列数 */
   dayCount: 6,
-  /** 默认高亮为「今天」的列下标 */
+  /** 默认高亮为「今天」的列下标；只在锚定月（偏移 0）出现，切月后不跟着走 */
   todayIndex: 2,
-  rows: ['08:00', '09:00', '10:00', '11:00'],
+  /** 全天工作时段逐小时成行，网格不再只露上午四行、下半截空着 */
+  rows: ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'],
 }
+
+/** 当前显示月份一条事件都没有时的空状态文案 */
+export const SCHEDULE_EMPTY_LABEL = '本月暂无日程'
 
 export interface ScheduleEvent {
   title: string
   desc: string
+  /** 所属月份相对锚定月（2024-09）的偏移：事件按显示月份过滤，不再钉死在每一月 */
+  monthOffset: number
   /** 起始列（1 起，对应 days 下标 +1） */
   col: number
   /** 跨列数 */
   span: number
-  /** 起始行（1 起，对应 rows 下标 +1） */
+  /** 起始行（1 起，对应 rows 下标 +1）；事件固定跨 2 个小时行（日历事件是时间块，不是单行标签） */
   row: number
   theme: 'dark' | 'light'
   avatars: string[]
@@ -417,6 +428,7 @@ export const SCHEDULE_EVENTS: ScheduleEvent[] = [
   {
     title: '周会同步',
     desc: '讨论各项目进展',
+    monthOffset: 0,
     col: 2,
     span: 2,
     row: 2,
@@ -426,11 +438,22 @@ export const SCHEDULE_EVENTS: ScheduleEvent[] = [
   {
     title: '新人入职宣讲',
     desc: '新成员认识与介绍',
+    monthOffset: 0,
     col: 4,
     span: 2,
     row: 3,
     theme: 'light',
     avatars: [avatar4, avatar1],
+  },
+  {
+    title: '季度复盘',
+    desc: 'Q3 目标对齐与复盘',
+    monthOffset: 1,
+    col: 3,
+    span: 2,
+    row: 2,
+    theme: 'light',
+    avatars: [avatar2, avatar3],
   },
 ]
 

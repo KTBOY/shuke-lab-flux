@@ -12,7 +12,21 @@
       </span>
     </header>
 
-    <ul class="tasks__list">
+    <!-- 空状态与清单共存：全部完成时清单仍可点回，空状态只说明「待办已空」；一条都没有时它代替清单 -->
+    <EmptyState
+      v-if="tasks.length === 0"
+      class="tasks__empty"
+      tone="dark"
+      :label="ONBOARDING_TASKS.emptyLabel"
+    />
+    <EmptyState
+      v-else-if="restCount === 0"
+      class="tasks__empty"
+      tone="dark"
+      :label="ONBOARDING_TASKS.allDoneLabel"
+    />
+
+    <ul v-if="tasks.length > 0" class="tasks__list">
       <li v-for="task in tasks" :key="task.title">
         <button
           type="button"
@@ -41,6 +55,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import EmptyState from '@/components/dashboard/EmptyState.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import { useOnboardingTasks } from '@/composables/useOnboardingTasks'
 import { ONBOARDING_TASKS } from '@/data/dashboard'
@@ -130,6 +145,11 @@ const restText = computed(() =>
 .tasks__list {
   display: flex;
   flex-direction: column;
+}
+
+/* 空状态条贴在卡头之下、清单之上，与卡头之间留一条呼吸缝 */
+.tasks__empty {
+  margin-bottom: 10px;
 }
 
 .task {

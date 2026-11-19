@@ -37,6 +37,16 @@ defineOptions({ name: 'Dashboard-EmployeeProfileCard' })
   object-position: center 22%;
 }
 
+/*
+ * 超宽屏下左栏宽 800px 以上，200px 定高会把照片裁成一条横幅、人脸被切。
+ * 高度封顶放到 320：宽高比回到约 2.6:1 以内，脸所在的 22% 焦点带完整露得出。
+ */
+@container stage (min-width: 2560px) {
+  .profile {
+    height: 320px;
+  }
+}
+
 .profile__mask {
   position: absolute;
   inset: auto 0 0 0;
