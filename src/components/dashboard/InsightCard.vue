@@ -1,64 +1,37 @@
 <!--
  * @Author: zlc
- * @Description: 洞察卡片 —— 冷色渐变轮播块，三条洞察各占一屏，底部进度段兼作切换点
+ * @Description: 洞察卡片 —— 深墨展示带上的静态事实块：大数字 + 一词基线，解释只进 tooltip，不上屏成句
 -->
 <template>
-  <section
-    class="panel insight"
-    aria-label="洞察"
-    @pointerenter="pause"
-    @pointerleave="resume"
-    @focusin="pause"
-    @focusout="resume"
-  >
+  <section class="panel insight" aria-label="洞察">
     <span class="insight__chip">
       <AppIcon name="bulb" :size="12" />
       {{ INSIGHT_CARD.chip }}
     </span>
 
-    <div :key="index" class="insight__stage">
-      <p class="insight__rate tnum">{{ slide.rate }}</p>
-      <div class="insight__copy">
-        <p class="insight__headline">{{ slide.headline }}</p>
-        <p class="insight__detail">{{ slide.detail }}</p>
-      </div>
-    </div>
-
-    <div class="insight__dots">
-      <button
-        v-for="(item, i) in slides"
-        :key="item.headline"
-        type="button"
-        class="dot"
-        :class="{ 'is-on': i === index }"
-        :aria-current="i === index ? 'true' : undefined"
-        :aria-label="`看第 ${i + 1} 条洞察：${item.headline}`"
-        @click="go(i)"
-      >
-        <span class="dot__track" aria-hidden="true">
-          <i class="dot__fill"></i>
-        </span>
-      </button>
-    </div>
+    <ul class="insight__facts">
+      <li v-for="fact in facts" :key="fact.label" class="fact" :title="fact.hint">
+        <p class="fact__value tnum">{{ fact.value }}</p>
+        <p class="fact__label">{{ fact.label }}</p>
+      </li>
+    </ul>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, onScopeDispose, ref } from 'vue'
+import { computed } from 'vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import { useOnboardingTasks } from '@/composables/useOnboardingTasks'
 import { INSIGHT_CARD, PROGRESS_DELTA, PROGRESS_INSIGHT } from '@/data/dashboard'
 
 defineOptions({ name: 'Dashboard-InsightCard' })
 
-const { doneCount, total } = useOnboardingTasks()
+const { doneCount, total, completionRate } = useOnboardingTasks()
 
-const taskRate = computed(() => Math.round((doneCount.value / total) * 100))
-
-/** 大数字与文案共用一次填充：占位符缺值就留空，不静默回退成 0 */
+/** 大数字与基线共用一次填充：占位符缺值就留空，不静默回退成 0 */
 function fill(template: string): string {
   const vars: Record<string, string | number> = {
-    taskRate: taskRate.value,
+    taskRate: completionRate.value,
     done: doneCount.value,
     total,
     deltaPercent: PROGRESS_DELTA.percent,
@@ -70,64 +43,13 @@ function fill(template: string): string {
   return template.replace(/\{(\w+)\}/g, (_match, key: string) => String(vars[key] ?? ''))
 }
 
-const slides = computed(() =>
-  INSIGHT_CARD.slides.map((slide) => ({
-    rate: fill(slide.rate),
-    headline: fill(slide.headline),
-    detail: fill(slide.detail),
+const facts = computed(() =>
+  INSIGHT_CARD.facts.map((fact) => ({
+    value: fill(fact.value),
+    label: fact.label,
+    hint: fill(fact.hint),
   })),
 )
-
-const index = ref(0)
-const slide = computed(() => slides.value[index.value])
-
-function go(next: number): void {
-  index.value = next
-}
-
-const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
-let hovering = false
-let timer: number | undefined
-
-function advance(): void {
-  index.value = (index.value + 1) % slides.value.length
-}
-
-function start(): void {
-  // 降级动效偏好下不自动翻页：CSS 媒体查询管不到 JS 定时器，只能在这里拦
-  if (reduced.matches || hovering || timer !== undefined) return
-  timer = window.setInterval(advance, INSIGHT_CARD.dwell)
-}
-
-function stop(): void {
-  if (timer !== undefined) {
-    window.clearInterval(timer)
-    timer = undefined
-  }
-}
-
-function pause(): void {
-  hovering = true
-  stop()
-}
-
-function resume(): void {
-  hovering = false
-  start()
-}
-
-function onMotionChange(): void {
-  if (reduced.matches) stop()
-  else start()
-}
-
-reduced.addEventListener('change', onMotionChange)
-start()
-
-onScopeDispose(() => {
-  reduced.removeEventListener('change', onMotionChange)
-  stop()
-})
 </script>
 
 <style scoped>
@@ -176,94 +98,38 @@ onScopeDispose(() => {
   letter-spacing: 0.01em;
 }
 
-.insight__stage {
+.insight__facts {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fact {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 6px;
-  /* key 换页时重放，让数字与文案一起淡入而不是硬切 */
-  animation: insight-in 0.42s cubic-bezier(0.2, 0.7, 0.3, 1);
+  gap: 4px;
+  min-width: 0;
 }
 
-@keyframes insight-in {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.insight__rate {
+.fact__value {
   margin: 0;
   color: var(--c-accent);
   font-size: var(--fs-metric);
   font-weight: 300;
   letter-spacing: -0.02em;
   line-height: 1;
+  white-space: nowrap;
 }
 
-.insight__copy {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: auto;
-}
-
-.insight__headline {
-  margin: 0;
-  font-size: var(--fs-body);
-  font-weight: 600;
-  line-height: 1.4;
-}
-
-.insight__detail {
+.fact__label {
   margin: 0;
   color: var(--c-on-dark-soft);
   font-size: var(--fs-label);
-  line-height: 1.5;
-}
-
-.insight__dots {
-  display: flex;
-  gap: 6px;
-}
-
-.dot {
-  flex: 1;
-  min-width: 0;
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-
-.dot__track {
-  display: block;
-  height: 4px;
-  border-radius: var(--r-pill);
-  background: var(--c-dark-2);
-  transition: background 0.2s ease;
-}
-
-.dot__fill {
-  display: block;
-  height: 100%;
-  width: 0;
-  border-radius: inherit;
-  background: var(--c-accent);
-  transition: width 0.32s cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-
-.dot.is-on .dot__fill {
-  width: 100%;
-}
-
-.dot:focus-visible {
-  outline: 2px solid var(--c-on-dark);
-  outline-offset: 3px;
-  border-radius: var(--r-pill);
+  white-space: nowrap;
 }
 </style>

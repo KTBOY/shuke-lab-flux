@@ -6,7 +6,10 @@
   <section class="panel tasks">
     <header class="tasks__head">
       <h2 class="tasks__title">{{ ONBOARDING_TASKS.title }}</h2>
-      <strong class="tasks__count tnum">{{ doneCount }}/{{ total }}</strong>
+      <span class="tasks__head-meta">
+        <span class="tasks__rest">{{ restText }}</span>
+        <strong class="tasks__count tnum">{{ doneCount }}/{{ total }}</strong>
+      </span>
     </header>
 
     <ul class="tasks__list">
@@ -37,13 +40,19 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import { useOnboardingTasks } from '@/composables/useOnboardingTasks'
 import { ONBOARDING_TASKS } from '@/data/dashboard'
 
 defineOptions({ name: 'Dashboard-OnboardingTaskCard' })
 
-const { tasks, doneCount, total, toggle } = useOnboardingTasks()
+const { tasks, doneCount, restCount, total, toggle } = useOnboardingTasks()
+
+/** 强调色只给未完成计数：注意力应该落在还欠着的事上，不是已办完的对勾 */
+const restText = computed(() =>
+  ONBOARDING_TASKS.restChip.replace('{rest}', String(restCount.value)),
+)
 </script>
 
 <style scoped>
@@ -101,6 +110,23 @@ const { tasks, doneCount, total, toggle } = useOnboardingTasks()
   letter-spacing: -0.01em;
 }
 
+.tasks__head-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 全卡唯一的强调色块：未完成计数。文字用恒定的深墨色，黄底在明暗两模下都读得清 */
+.tasks__rest {
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background: var(--c-accent);
+  color: var(--c-dark);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .tasks__list {
   display: flex;
   flex-direction: column;
@@ -152,7 +178,7 @@ const { tasks, doneCount, total, toggle } = useOnboardingTasks()
 }
 
 .task__time {
-  font-size: 9px;
+  font-size: var(--fs-mini);
   color: rgba(255, 255, 255, 0.28);
 }
 
@@ -170,7 +196,8 @@ const { tasks, doneCount, total, toggle } = useOnboardingTasks()
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  color: var(--c-ink);
+  /* 已完成态降为中性：深卡上的一层浅灰填充 + 亮字对勾，不再用强调黄抢注意力 */
+  color: var(--c-on-dark);
 }
 
 /*
@@ -182,7 +209,7 @@ const { tasks, doneCount, total, toggle } = useOnboardingTasks()
   grid-area: 1 / 1;
   place-self: stretch;
   border-radius: 50%;
-  background: var(--c-accent);
+  background: rgba(255, 255, 255, 0.2);
   opacity: 0;
   transform: scale(0.55);
   content: '';

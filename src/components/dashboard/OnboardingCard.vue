@@ -6,15 +6,20 @@
   <section class="panel onboard">
     <header class="onboard__head">
       <h2 class="panel__title">{{ ONBOARDING_CARD.title }}</h2>
-      <strong class="onboard__rate tnum">{{ ONBOARDING_CARD.rate }}%</strong>
+      <strong class="onboard__rate tnum">{{ completionRate }}%</strong>
     </header>
 
     <ul class="onboard__bars">
-      <li v-for="bar in ONBOARDING_CARD.bars" :key="bar.tag" class="onboard__item">
-        <span class="onboard__label">{{ bar.label }}</span>
+      <li v-for="bar in bars" :key="bar.tag" class="onboard__item">
+        <span class="onboard__label">
+          {{ bar.label }}
+          <span v-if="bar.value === 0" class="onboard__chip">{{
+            ONBOARDING_CARD.notStartedLabel
+          }}</span>
+        </span>
         <span
           class="onboard__bar"
-          :class="`onboard__bar--${bar.variant}`"
+          :class="[`onboard__bar--${bar.variant}`, { 'onboard__bar--unstarted': bar.value === 0 }]"
           :style="{ flexGrow: bar.value || 0.28 }"
         >
           <span class="onboard__tag">{{ bar.tag }}</span>
@@ -33,7 +38,16 @@ import { ONBOARDING_CARD } from '@/data/dashboard'
 
 defineOptions({ name: 'Dashboard-OnboardingCard' })
 
-const { restCount } = useOnboardingTasks()
+const { restCount, completionRate } = useOnboardingTasks()
+
+/** 大字与「任务」分项条同源：都读任务清单现算的完成率，数据里的分项只留培训/评估两条独立指标 */
+const bars = computed(() =>
+  ONBOARDING_CARD.bars.map((bar) =>
+    bar.fromTasks
+      ? { ...bar, label: `${completionRate.value}%`, value: completionRate.value }
+      : bar,
+  ),
+)
 
 const footerText = computed(() => ONBOARDING_CARD.footer.replace('{rest}', String(restCount.value)))
 </script>
@@ -72,8 +86,22 @@ const footerText = computed(() => ONBOARDING_CARD.footer.replace('{rest}', Strin
 }
 
 .onboard__label {
-  font-size: 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-label);
   color: var(--c-ink-3);
+}
+
+/* 未开始是全卡唯一需要被看见的状态：chip 给文字、虚线给形状，不靠降低亮度表达 */
+.onboard__chip {
+  padding: 0 5px;
+  border: 1px dashed var(--c-line-dash);
+  border-radius: var(--r-pill);
+  font-size: var(--fs-mini);
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--c-ink-2);
 }
 
 .onboard__bar {
@@ -100,8 +128,13 @@ const footerText = computed(() => ONBOARDING_CARD.footer.replace('{rest}', Strin
   color: var(--c-ink-2);
 }
 
+.onboard__bar--unstarted {
+  border: 1px dashed var(--c-line-dash);
+  background: transparent;
+}
+
 .onboard__tag {
-  font-size: 9px;
+  font-size: var(--fs-mini);
   font-weight: 500;
   white-space: nowrap;
 }

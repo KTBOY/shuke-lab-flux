@@ -140,7 +140,7 @@ function shiftMonth(step: number): void {
   border-radius: var(--r-pill);
   background: var(--c-accent-soft);
   color: var(--c-ink-2);
-  font-size: 9.5px;
+  font-size: var(--fs-mini);
   transition:
     background-color 0.16s ease,
     color 0.16s ease;
@@ -193,7 +193,7 @@ function shiftMonth(step: number): void {
 }
 
 .schedule__weekday {
-  font-size: 9px;
+  font-size: var(--fs-mini);
   color: var(--c-ink-3);
 }
 
@@ -212,7 +212,7 @@ function shiftMonth(step: number): void {
   display: flex;
   align-items: flex-start;
   padding-top: 4px;
-  font-size: 9px;
+  font-size: var(--fs-mini);
   color: var(--c-ink-3);
 }
 
@@ -260,7 +260,7 @@ function shiftMonth(step: number): void {
 }
 
 .event__desc {
-  font-size: 8.5px;
+  font-size: var(--fs-mini);
   color: currentColor;
   opacity: 0.55;
   white-space: nowrap;
