@@ -11,7 +11,7 @@
         class="stats__slot"
         :style="{ flexGrow: bar.value, '--i': index }"
       >
-        <span class="stats__label">{{ bar.label }}</span>
+        <span class="stats__label">{{ bar.label }} · {{ bar.baseline }}</span>
         <span class="bar" :class="`bar--${bar.variant}`">
           <span class="bar__value">{{ bar.display }}%</span>
         </span>
@@ -27,8 +27,8 @@
         <span class="kpi__label">{{ kpi.label }}</span>
 
         <div class="kpi__foot">
-          <span class="kpi__delta" :class="`kpi__delta--${kpi.delta >= 0 ? 'up' : 'down'}`">
-            <span class="sr-only">{{ KPI_DELTA_LABEL }}</span>
+          <span class="kpi__delta" :class="`kpi__delta--${kpi.tone}`">
+            <span class="kpi__delta-label">{{ KPI_DELTA_LABEL }}</span>
             <AppIcon :name="kpi.delta >= 0 ? 'chevron-up' : 'chevron-down'" :size="10" />
             <span class="tnum">{{ signed(kpi.delta) }}</span>
           </span>
@@ -43,6 +43,7 @@
               ></i>
             </span>
           </span>
+          <span class="kpi__trend-label" aria-hidden="true">{{ KPI_TREND_LABEL }}</span>
         </div>
       </li>
     </ul>
@@ -53,7 +54,8 @@
 import { computed } from 'vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import { useCountUp } from '@/composables/useCountUp'
-import { KPI_DELTA_LABEL, KPI_STATS, STAT_BARS } from '@/data/dashboard'
+import { KPI_DELTA_LABEL, KPI_STATS, KPI_TREND_LABEL, STAT_BARS } from '@/data/dashboard'
+import type { KpiStat } from '@/data/dashboard'
 
 defineOptions({ name: 'Dashboard-StatOverview' })
 
@@ -61,12 +63,22 @@ defineOptions({ name: 'Dashboard-StatOverview' })
 const barCountUps = STAT_BARS.map((bar) => useCountUp(bar.value))
 const kpiCountUps = KPI_STATS.map((kpi) => useCountUp(kpi.value))
 
+/** delta 的色调跟含义走、不跟方向走：中性指标一律灰，定性明确时方向与含义相符才算「好」 */
+function deltaTone(kpi: KpiStat): 'pos' | 'neg' | 'neu' {
+  if (kpi.sentiment === 'neutral' || kpi.delta === 0) return 'neu'
+  return kpi.delta > 0 === (kpi.sentiment === 'positive') ? 'pos' : 'neg'
+}
+
 /** 把当前帧的格式化文案并回数据行，模板只读字段、不感知滚动细节 */
 const bars = computed(() =>
   STAT_BARS.map((bar, index) => ({ ...bar, display: barCountUps[index]?.text.value ?? '' })),
 )
 const kpis = computed(() =>
-  KPI_STATS.map((kpi, index) => ({ ...kpi, display: kpiCountUps[index]?.text.value ?? '' })),
+  KPI_STATS.map((kpi, index) => ({
+    ...kpi,
+    display: kpiCountUps[index]?.text.value ?? '',
+    tone: deltaTone(kpi),
+  })),
 )
 
 /** 点阵的行数：列高按它取整，七列四行足够看出形状又不抢主数值 */
@@ -131,9 +143,13 @@ function signed(value: number): string {
   font-weight: 500;
 }
 
+/*
+ * 深色胶囊走随主题翻转的令牌对（墨字面 ↔ 画布面）：--c-dark 在深色下仍是近黑，
+ * 压在深色卡面上会隐形；用 --c-ink / --c-canvas 则两种模式下都与卡面拉开明度差。
+ */
 .bar--dark {
-  background: var(--c-dark);
-  color: var(--c-on-dark);
+  background: var(--c-ink);
+  color: var(--c-canvas);
 }
 
 .bar--accent {
@@ -212,16 +228,29 @@ function signed(value: number): string {
   line-height: 1.3;
 }
 
-/* 朝向由箭头给出，颜色只是加强；暖底上没有第二个语义色，降调走描边 */
-.kpi__delta--up {
+/* 颜色跟含义不跟箭头：语义为「好」才吃强调底，中性与「坏」一律描边灰 */
+.kpi__delta--pos {
   border: 1px solid var(--c-accent-deep);
   background: var(--c-accent-soft);
   color: var(--c-ink);
 }
 
-.kpi__delta--down {
+.kpi__delta--neg,
+.kpi__delta--neu {
   border: 1px solid var(--c-line-dash);
   color: var(--c-ink-2);
+}
+
+/* 比较窗与趋势窗各自上屏标注，不再只藏在 sr-only 里 */
+.kpi__delta-label {
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+.kpi__trend-label {
+  font-size: var(--fs-mini);
+  color: var(--c-ink-3);
+  white-space: nowrap;
 }
 
 .kpi__trend {

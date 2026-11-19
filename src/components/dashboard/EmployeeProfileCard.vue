@@ -1,6 +1,6 @@
 <!--
  * @Author: zlc
- * @Description: 员工档案卡 —— 头像照片 + 底部渐变遮罩上的姓名、岗位与金额胶囊
+ * @Description: 员工档案卡 —— 头像照片 + 底部渐变遮罩上的姓名与岗位
 -->
 <template>
   <figure class="profile">
@@ -10,7 +10,6 @@
         <strong class="profile__name">{{ PROFILE.name }}</strong>
         <span class="profile__role">{{ PROFILE.role }}</span>
       </div>
-      <span class="profile__amount">{{ PROFILE.amount }}</span>
     </figcaption>
   </figure>
 </template>
@@ -65,19 +64,5 @@ defineOptions({ name: 'Dashboard-EmployeeProfileCard' })
 .profile__role {
   font-size: var(--fs-mini);
   color: rgba(255, 255, 255, 0.72);
-}
-
-.profile__amount {
-  display: grid;
-  place-items: center;
-  height: 27px;
-  padding: 0 12px;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  border-radius: var(--r-pill);
-  background: rgba(255, 255, 255, 0.14);
-  color: var(--c-on-dark);
-  font-size: var(--fs-mini);
-  font-weight: 500;
-  backdrop-filter: blur(4px);
 }
 </style>

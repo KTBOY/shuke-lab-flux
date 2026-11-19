@@ -18,6 +18,7 @@
         <span class="tracker__caption">{{ TIME_TRACKER_CARD.caption }}</span>
       </div>
     </div>
+    <p class="tracker__baseline">{{ TIME_TRACKER_CARD.targetLabel }}</p>
 
     <div class="tracker__controls">
       <div class="tracker__group">
@@ -50,15 +51,21 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import { useTimeTracker } from '@/composables/useTimeTracker'
 import { TIME_TRACKER_CARD } from '@/data/dashboard'
 
 defineOptions({ name: 'Dashboard-TimeTrackerCard' })
 
-const { display, isRunning, start, pause } = useTimeTracker(TIME_TRACKER_CARD.initialSeconds)
+const { seconds, display, isRunning, start, pause } = useTimeTracker(
+  TIME_TRACKER_CARD.initialSeconds,
+)
 
-const progress = TIME_TRACKER_CARD.progress
+/** 圆环编码真实比例：已计时长 / 全天目标，计时走动环随之生长，不再是写死常数 */
+const progress = computed(() =>
+  Math.min(100, (seconds.value / TIME_TRACKER_CARD.targetSeconds) * 100),
+)
 </script>
 
 <style scoped>
@@ -81,13 +88,13 @@ const progress = TIME_TRACKER_CARD.progress
   position: absolute;
   inset: 9px;
   border-radius: 50%;
-  background: conic-gradient(var(--c-accent-deep) calc(var(--p) * 1%), rgba(23, 23, 26, 0.07) 0);
+  background: conic-gradient(var(--c-accent-deep) calc(var(--p) * 1%), var(--c-line) 0);
   mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 7px));
   content: '';
 }
 
 .tracker__ring.is-running::before {
-  background: conic-gradient(var(--c-accent-deep) calc(var(--p) * 1%), rgba(23, 23, 26, 0.07) 0);
+  background: conic-gradient(var(--c-accent-deep) calc(var(--p) * 1%), var(--c-line) 0);
   animation: ring-breathe 2.4s ease-in-out infinite;
 }
 
@@ -100,10 +107,11 @@ const progress = TIME_TRACKER_CARD.progress
    * 单层 60 格是 60 阶旋转对称，一秒走过正好一个格距，图案每秒与自身重合，
    * 转了也看不出来；压上 30°/90° 两级重刻度后对称降到 12 阶，扫动才读得出方向。
    */
+  /* 刻度色走 --c-tick 三档令牌：随主题翻转，深色下自动换浅色，不再写死墨色 */
   background:
-    repeating-conic-gradient(rgba(23, 23, 26, 0.62) 0 1.6deg, transparent 1.6deg 90deg),
-    repeating-conic-gradient(rgba(23, 23, 26, 0.45) 0 1.1deg, transparent 1.1deg 30deg),
-    repeating-conic-gradient(rgba(23, 23, 26, 0.28) 0 0.7deg, transparent 0.7deg 6deg);
+    repeating-conic-gradient(var(--c-tick) 0 1.6deg, transparent 1.6deg 90deg),
+    repeating-conic-gradient(var(--c-tick-mid) 0 1.1deg, transparent 1.1deg 30deg),
+    repeating-conic-gradient(var(--c-tick-soft) 0 0.7deg, transparent 0.7deg 6deg);
   mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
   /*
    * 动画常驻、只用 play-state 开关：若按 is-running 挂撤 animation，
@@ -134,7 +142,15 @@ const progress = TIME_TRACKER_CARD.progress
 }
 
 .tracker__caption {
-  font-size: 9px;
+  font-size: var(--fs-mini);
+  color: var(--c-ink-3);
+}
+
+/* 环下的一词基线：圆环的分母（目标时长），与环同宽居中 */
+.tracker__baseline {
+  margin: 6px 0 0;
+  text-align: center;
+  font-size: var(--fs-mini);
   color: var(--c-ink-3);
 }
 

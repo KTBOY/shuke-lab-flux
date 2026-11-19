@@ -1,12 +1,10 @@
 <!--
  * @Author: zlc
- * @Description: 工时解读栏 —— 结论句 + 本周合计与环比 + 工时构成，挂在工时卡图表右侧
+ * @Description: 工时解读栏 —— 只留数字事实：本周合计与环比 + 工时构成，挂在工时卡图表右侧
 -->
 <template>
   <aside class="insight">
     <h3 class="insight__title">{{ PROGRESS_INSIGHT.title }}</h3>
-
-    <p class="insight__headline">{{ PROGRESS_INSIGHT.headline }}</p>
 
     <div class="insight__figures">
       <div class="figure">
@@ -18,7 +16,7 @@
 
       <div class="figure">
         <span class="figure__label">{{ PROGRESS_DELTA.label }}</span>
-        <strong class="figure__delta" :class="`figure__delta--${PROGRESS_DELTA.dir}`">
+        <strong class="figure__delta" :class="`figure__delta--${deltaTone}`">
           <AppIcon :name="PROGRESS_DELTA.dir === 'up' ? 'chevron-up' : 'chevron-down'" :size="12" />
           <span class="tnum">{{ PROGRESS_DELTA.hours }}</span>
           <span class="figure__pct tnum">{{ PROGRESS_DELTA.percent }}</span>
@@ -41,16 +39,21 @@
         </span>
       </li>
     </ul>
-
-    <p class="insight__detail">{{ PROGRESS_INSIGHT.detail }}</p>
   </aside>
 </template>
 
 <script setup lang="ts">
-import AppIcon from '@/components/ui/AppIcon.vue'
 import { PROGRESS_DELTA, PROGRESS_INSIGHT } from '@/data/dashboard'
 
 defineOptions({ name: 'Dashboard-ProgressInsightPanel' })
+
+/** 颜色跟含义走：中性指标走灰，只有定性为正/负且方向与之相符时才上语义色 */
+const deltaTone =
+  PROGRESS_DELTA.sentiment === 'neutral'
+    ? 'neu'
+    : (PROGRESS_DELTA.dir === 'up') === (PROGRESS_DELTA.sentiment === 'positive')
+      ? 'pos'
+      : 'neg'
 </script>
 
 <style scoped>
@@ -70,14 +73,6 @@ defineOptions({ name: 'Dashboard-ProgressInsightPanel' })
   font-weight: 500;
   letter-spacing: 0.02em;
   color: var(--c-ink-2);
-}
-
-.insight__headline {
-  margin: 0;
-  font-size: var(--fs-body);
-  font-weight: 500;
-  line-height: 1.45;
-  color: var(--c-ink);
 }
 
 .insight__figures {
@@ -122,13 +117,14 @@ defineOptions({ name: 'Dashboard-ProgressInsightPanel' })
   line-height: 1.2;
 }
 
-/* 朝向由箭头给出、不靠颜色单独表意；降调只做描边不上色，暖底上没有第二个品牌色可用 */
-.figure__delta--up {
+/* 朝向由箭头给出、不靠颜色单独表意；语义明确才上色，中性一律描边灰 */
+.figure__delta--pos {
   background: var(--c-accent);
   color: var(--c-ink);
 }
 
-.figure__delta--down {
+.figure__delta--neg,
+.figure__delta--neu {
   border: 1px solid var(--c-line-dash);
   color: var(--c-ink-2);
 }
@@ -185,13 +181,6 @@ defineOptions({ name: 'Dashboard-ProgressInsightPanel' })
   font-size: var(--fs-label);
   color: var(--c-ink);
   text-align: right;
-}
-
-.insight__detail {
-  margin: 0;
-  font-size: var(--fs-label);
-  line-height: 1.6;
-  color: var(--c-ink-2);
 }
 
 @container stage (max-width: 720px) {
