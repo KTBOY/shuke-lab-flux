@@ -22,9 +22,9 @@ describe('权限星图数据', () => {
     expect(new Set(PERMISSION_MENUS.map((menu) => menu.id)).size).toBe(PERMISSION_MENUS.length)
   })
 
-  it('规模落在星图可读区间：5-6 个用户、6 个角色、14-18 个菜单', () => {
-    expect(PERMISSION_USERS.length).toBeGreaterThanOrEqual(5)
-    expect(PERMISSION_USERS.length).toBeLessThanOrEqual(6)
+  it('规模落在管理页可分页区间：12-14 个用户、6 个角色、14-18 个菜单', () => {
+    expect(PERMISSION_USERS.length).toBeGreaterThanOrEqual(12)
+    expect(PERMISSION_USERS.length).toBeLessThanOrEqual(14)
     expect(PERMISSION_ROLES).toHaveLength(6)
     expect(PERMISSION_MENUS.length).toBeGreaterThanOrEqual(14)
     expect(PERMISSION_MENUS.length).toBeLessThanOrEqual(18)
@@ -85,6 +85,7 @@ describe('权限星图数据', () => {
     PERMISSION_USERS.forEach((user) => {
       expect(user.name.length).toBeGreaterThan(0)
       expect(user.title.length).toBeGreaterThan(0)
+      expect(['enabled', 'disabled']).toContain(user.status)
     })
     PERMISSION_ROLES.forEach((role) => {
       expect(role.name.length).toBeGreaterThan(0)

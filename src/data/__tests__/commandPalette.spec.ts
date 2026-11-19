@@ -67,13 +67,20 @@ describe('answerPermissionQuestion', () => {
     expect(answerPermissionQuestion('导出')).toBeNull()
   })
 
-  it('「谁能导出数据」：反查到超级管理员、运营、财务与三条用户链', () => {
+  it('「谁能导出数据」：反查到超级管理员、运营、财务与全部用户链', () => {
     const answer = answerPermissionQuestion('谁能导出数据？')
     expect(answer?.type).toBe('who-can')
     if (answer?.type !== 'who-can') return
     expect(answer.menu.id).toBe('export')
     expect(answer.roles.map((role) => role.id)).toEqual(['super', 'ops', 'finance'])
-    expect(answer.chains.map((chain) => chain.user.name)).toEqual(['周明远', '陈嘉禾', '顾一舟'])
+    expect(answer.chains.map((chain) => chain.user.name)).toEqual([
+      '周明远',
+      '陈嘉禾',
+      '韩子墨',
+      '吴若曦',
+      '顾一舟',
+      '唐婉婷',
+    ])
     expect(answer.chains.every((chain) => chain.menu.id === 'export')).toBe(true)
     expect(answerSummary(answer)).toContain('数据导出')
     expect(answerSummary(answer)).toContain('顾一舟')
@@ -84,7 +91,7 @@ describe('answerPermissionQuestion', () => {
     expect(answer?.type).toBe('who-can')
     if (answer?.type !== 'who-can') return
     expect(answer.menu.id).toBe('user-manage')
-    expect(answer.chains.map((chain) => chain.user.name)).toEqual(['周明远', '林小鹿'])
+    expect(answer.chains.map((chain) => chain.user.name)).toEqual(['周明远', '林小鹿', '何俊杰'])
   })
 
   it('「运营有什么权限」：答清单，运营的 5 个菜单一个不多一个不少', () => {

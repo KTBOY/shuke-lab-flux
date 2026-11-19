@@ -19,18 +19,18 @@ export const COLOR_LAB_NAV_LABEL = '颜色实验室'
 /** 权限星图入口标签，同样是真跳转项 */
 export const PERMISSIONS_NAV_LABEL = '权限星图'
 
-/** 还没有对应页面的菜单项，暂收起来；补上页面后拼回 NAV_ITEMS 即可 */
-export const PLACEHOLDER_NAV_ITEMS = [
-  '员工',
-  '招聘',
-  '设备',
-  '应用',
-  '薪酬',
-  '日历',
-  '评价',
-] as const
+/** 用户管理入口标签，由原占位项「员工」落地为真页面 */
+export const USERS_NAV_LABEL = '用户管理'
 
-export const NAV_ITEMS = ['仪表盘', PERMISSIONS_NAV_LABEL, COLOR_LAB_NAV_LABEL] as const
+/** 还没有对应页面的菜单项，暂收起来；补上页面后拼回 NAV_ITEMS 即可 */
+export const PLACEHOLDER_NAV_ITEMS = ['招聘', '设备', '应用', '薪酬', '日历', '评价'] as const
+
+export const NAV_ITEMS = [
+  '仪表盘',
+  USERS_NAV_LABEL,
+  PERMISSIONS_NAV_LABEL,
+  COLOR_LAB_NAV_LABEL,
+] as const
 
 export const ACTIVE_NAV = '仪表盘'
 

@@ -101,6 +101,15 @@ const PAGE_ITEMS: CommandItem[] = [
     routeName: 'dashboard',
   },
   {
+    id: 'page:users',
+    kind: 'page',
+    label: '用户管理',
+    hint: '维护用户、角色归属与启停状态',
+    icon: 'people',
+    keywords: '用户管理 用户 账号 员工 users accounts management',
+    routeName: 'users',
+  },
+  {
     id: 'page:permissions',
     kind: 'page',
     label: '权限星图',
@@ -217,7 +226,7 @@ const GROUP_LABEL: Record<CommandKind, string> = {
 }
 
 const GROUP_ORDER: CommandKind[] = ['page', 'action', 'entity']
-/** 每组最多展示条数：实体全量 28 条，命中太多时截断保住面板高度 */
+/** 每组最多展示条数：实体全量 35 条，命中太多时截断保住面板高度 */
 const GROUP_LIMIT = 8
 
 function normalize(text: string): string {
