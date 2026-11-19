@@ -32,6 +32,7 @@ export type IconName =
   | 'sun'
   | 'moon'
   | 'search'
+  | 'logout'
 
 /** 图标图元：path 用 d 描述，dot 用圆心半径描述 */
 export interface IconShape {
@@ -150,4 +151,10 @@ export const ICON_SHAPES: Record<IconName, IconShape[]> = {
   moon: [{ d: 'M20.2 14.8A8.4 8.4 0 1 1 9.2 3.8a6.8 6.8 0 0 0 11 11Z' }],
   /* 搜索：圆 + 斜柄，命令面板入口与面板输入框共用 */
   search: [{ d: 'M11 5a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z' }, { d: 'M15.8 15.8L20 20' }],
+  /* 退出：半开的门框 + 向右出门的箭头，顶栏账号菜单与命令面板的退出动作共用 */
+  logout: [
+    { d: 'M9.5 21H5.5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4' },
+    { d: 'M16.5 17.5 21 12l-4.5-5.5' },
+    { d: 'M21 12H9.5' },
+  ],
 }
