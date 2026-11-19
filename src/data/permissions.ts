@@ -7,12 +7,16 @@
 /* ---------------- 类型 ---------------- */
 export type PermissionNodeKind = 'user' | 'role' | 'menu'
 
+export type PermissionUserStatus = 'enabled' | 'disabled'
+
 export interface PermissionUser {
   id: string
   name: string
   /** 职务说明，展示在用户列表与详情面板 */
   title: string
   roleIds: string[]
+  /** 演示用账号状态：模板项目没有后端，此字段与用户数据同源，供管理页展示与切换初始值 */
+  status: PermissionUserStatus
 }
 
 export interface PermissionRole {
@@ -100,12 +104,55 @@ export const PERMISSION_ROLES: PermissionRole[] = [
 
 /* ---------------- 用户 ---------------- */
 export const PERMISSION_USERS: PermissionUser[] = [
-  { id: 'zhou-mingyuan', name: '周明远', title: '平台负责人', roleIds: ['super'] },
-  { id: 'lin-xiaolu', name: '林小鹿', title: '系统管理员', roleIds: ['system'] },
-  { id: 'chen-jiahe', name: '陈嘉禾', title: '运营主管', roleIds: ['ops', 'editor'] },
-  { id: 'su-qing', name: '苏晴', title: '内容编辑', roleIds: ['editor'] },
-  { id: 'gu-yizhou', name: '顾一舟', title: '财务专员', roleIds: ['finance'] },
-  { id: 'luo-xiaoman', name: '罗小满', title: '实习生（访客）', roleIds: ['guest'] },
+  {
+    id: 'zhou-mingyuan',
+    name: '周明远',
+    title: '平台负责人',
+    roleIds: ['super'],
+    status: 'enabled',
+  },
+  { id: 'lin-xiaolu', name: '林小鹿', title: '系统管理员', roleIds: ['system'], status: 'enabled' },
+  {
+    id: 'chen-jiahe',
+    name: '陈嘉禾',
+    title: '运营主管',
+    roleIds: ['ops', 'editor'],
+    status: 'enabled',
+  },
+  { id: 'su-qing', name: '苏晴', title: '内容编辑', roleIds: ['editor'], status: 'enabled' },
+  { id: 'gu-yizhou', name: '顾一舟', title: '财务专员', roleIds: ['finance'], status: 'enabled' },
+  {
+    id: 'luo-xiaoman',
+    name: '罗小满',
+    title: '实习生（访客）',
+    roleIds: ['guest'],
+    status: 'disabled',
+  },
+  { id: 'han-zimo', name: '韩子墨', title: '运营专员', roleIds: ['ops'], status: 'enabled' },
+  {
+    id: 'tang-wanting',
+    name: '唐婉婷',
+    title: '财务助理',
+    roleIds: ['finance'],
+    status: 'disabled',
+  },
+  { id: 'he-junjie', name: '何俊杰', title: '系统运维', roleIds: ['system'], status: 'enabled' },
+  { id: 'shen-jiayi', name: '沈佳怡', title: '内容策划', roleIds: ['editor'], status: 'enabled' },
+  { id: 'zhao-yiming', name: '赵一鸣', title: '外部访客', roleIds: ['guest'], status: 'disabled' },
+  {
+    id: 'wu-ruoxi',
+    name: '吴若曦',
+    title: '运营助理',
+    roleIds: ['ops', 'editor'],
+    status: 'enabled',
+  },
+  {
+    id: 'zheng-kaiwen',
+    name: '郑凯文',
+    title: '培训讲师',
+    roleIds: ['editor', 'guest'],
+    status: 'enabled',
+  },
 ]
 
 /* ---------------- 查找与派生 ---------------- */
