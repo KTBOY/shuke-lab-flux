@@ -35,10 +35,14 @@
         </div>
       </footer>
     </main>
+
+    <!-- 命令面板挂外壳层一次、全站可用；本体 Teleport 到 body，这里只是挂载点 -->
+    <CommandPalette />
   </div>
 </template>
 
 <script setup lang="ts">
+import CommandPalette from '@/components/command/CommandPalette.vue'
 import AppNavbar from '@/components/dashboard/AppNavbar.vue'
 import { AUTHOR, STACK_NOTE, TECH_STACK } from '@/data/dashboard'
 

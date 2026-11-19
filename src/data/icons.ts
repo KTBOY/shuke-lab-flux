@@ -31,6 +31,7 @@ export type IconName =
   | 'download'
   | 'sun'
   | 'moon'
+  | 'search'
 
 /** 图标图元：path 用 d 描述，dot 用圆心半径描述 */
 export interface IconShape {
@@ -147,4 +148,6 @@ export const ICON_SHAPES: Record<IconName, IconShape[]> = {
   ],
   /* 月亮：一道大弧收出月牙，深浅模式切换按钮在浅色态显示（点了去深色） */
   moon: [{ d: 'M20.2 14.8A8.4 8.4 0 1 1 9.2 3.8a6.8 6.8 0 0 0 11 11Z' }],
+  /* 搜索：圆 + 斜柄，命令面板入口与面板输入框共用 */
+  search: [{ d: 'M11 5a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z' }, { d: 'M15.8 15.8L20 20' }],
 }
