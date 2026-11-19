@@ -96,6 +96,15 @@
         </Transition>
       </div>
 
+      <button
+        type="button"
+        class="nav__round"
+        aria-label="深色模式"
+        :aria-pressed="isDark"
+        @click="toggleColorMode"
+      >
+        <AppIcon :name="isDark ? 'sun' : 'moon'" :size="16" />
+      </button>
       <button type="button" class="nav__round" aria-label="通知">
         <AppIcon name="bell" :size="16" />
       </button>
@@ -111,6 +120,7 @@ import { computed, nextTick, onMounted, onScopeDispose, ref, watch } from 'vue'
 import type { CSSProperties } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppIcon from '@/components/ui/AppIcon.vue'
+import { useColorMode } from '@/composables/useColorMode'
 import {
   ACTIVE_NAV,
   AUTHOR,
@@ -126,6 +136,9 @@ defineOptions({ name: 'Dashboard-AppNavbar' })
 
 const route = useRoute()
 const router = useRouter()
+
+/** 深浅模式与桥接主题正交：这里只管 data-theme，accent 仍归实验室主题 */
+const { isDark, toggleColorMode } = useColorMode()
 
 const activeNav = ref<string>(ACTIVE_NAV)
 const linksOpen = ref(false)
@@ -264,6 +277,8 @@ onScopeDispose(() => {
   padding: 0 10px;
   border-radius: var(--r-pill);
   background: var(--c-surface-warm);
+  /* 深浅切换时玻璃面底色平滑过渡，与 base.css 的主要面过渡同拍 */
+  transition: background-color 0.25s ease;
 }
 
 .nav__brand {
@@ -277,6 +292,9 @@ onScopeDispose(() => {
   background: var(--c-surface);
   font-size: 15px;
   letter-spacing: -0.01em;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease;
 }
 
 /* 菜单组在任何宽度下都只有一行，装不下就横向滚，绝不让文字在 46px 胶囊里换行被裁 */
@@ -413,7 +431,9 @@ onScopeDispose(() => {
   background: var(--c-surface);
   font-size: var(--fs-mini);
   white-space: nowrap;
-  transition: color 0.16s ease;
+  transition:
+    color 0.16s ease,
+    background-color 0.25s ease;
 }
 
 .nav__setting:hover,
@@ -431,7 +451,8 @@ onScopeDispose(() => {
   color: var(--c-ink-2);
   transition:
     color 0.16s ease,
-    transform 0.16s ease;
+    transform 0.16s ease,
+    background-color 0.25s ease;
 }
 
 .nav__round:hover {

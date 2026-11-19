@@ -50,3 +50,30 @@
     'Inter Variable', 'Inter', 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei',
     sans-serif;
 }
+
+/*
+ * 深色套 —— 只覆盖中性令牌（画布/面/线/字/阴影），与桥接主题正交：
+ * 桥接（useDashboardTheme）写的是 --c-accent 家族的根元素内联变量，本块一概不碰，
+ * 两边同时生效时强调色仍是 FLUX 主题色、底色走深色，互不覆盖。
+ * 不覆盖的还有深墨带体系（--c-dark / --c-dark-2 / --c-on-dark / --c-on-dark-soft /
+ * --c-hairline-dark）：那套在两种模式下都以近黑面 + 微亮描边自洽，导航深墨胶囊即靠它。
+ * 取值口径：与浅色同为暖灰色相，阶梯方向不变（画布最深 → 卡面亮一档 → 控件面最亮，
+ * 边线比卡面略亮的低对比线），阴影改纯黑、更深更扩散（深色下靠阴影分层不如靠明度差，
+ * 这里只给浮起元素留一层存在感）。文字三档在卡面上分别约 13:1 / 9:1 / 6:1，
+ * 不低于浅色注释里 4.8:1 的底线；--c-ink-4 仍是装饰档（约 3:1，浅色同档约 1.9:1）。
+ */
+:root[data-theme='dark'] {
+  --c-canvas: #171512;
+  --c-surface-card: #221f1a;
+  --c-surface: #2c2924;
+  --c-surface-warm: rgba(33, 30, 25, 0.78);
+  --c-hairline: #38342b;
+  --c-line: rgba(245, 242, 235, 0.1);
+  --c-line-dash: rgba(245, 242, 235, 0.17);
+  --c-ink: #f4f1ea;
+  --c-ink-2: #c8c3b8;
+  --c-ink-3: #a19b8e;
+  --c-ink-4: #6f6a5f;
+  --sd-panel: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --sd-float: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
