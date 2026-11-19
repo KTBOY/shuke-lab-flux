@@ -442,6 +442,14 @@ export interface FluxStudioUi {
   applyNeedSelect: string
   /** 恢复 tokens.css 默认主题的按钮文案 */
   restoreDefault: string
+  /** 导出当前选中主题的 CSS 变量文件按钮文案 */
+  exportCss: string
+  /** 导出当前选中主题的 JSON 色板文件按钮文案 */
+  exportJson: string
+  /** 导出成功后按钮短暂显示的反馈文案，后接主题英文名 */
+  exportDone: string
+  /** 筛选为「全部」时导出按钮禁用，title 里给出的原因 */
+  exportNeedSelect: string
 }
 
 export const FLUX_STUDIO_UI: FluxStudioUi = {
@@ -456,6 +464,31 @@ export const FLUX_STUDIO_UI: FluxStudioUi = {
   applyDone: '已应用',
   applyNeedSelect: '先在左栏选一套主题，再应用到仪表盘',
   restoreDefault: '恢复默认主题',
+  exportCss: '导出 CSS',
+  exportJson: '导出 JSON',
+  exportDone: '已导出',
+  exportNeedSelect: '先在左栏选一套主题，再导出它的配色',
+}
+
+export interface NotFoundUi {
+  /** 大号状态码 */
+  code: string
+  /** 一句话点明这一页不存在 */
+  title: string
+  /** 辅助说明：地址可能写错，或页面已被挪走 */
+  desc: string
+  /** 回颜色实验室（首页）的入口文案 */
+  toColorLab: string
+  /** 去仪表盘的入口文案 */
+  toDashboard: string
+}
+
+export const NOT_FOUND_UI: NotFoundUi = {
+  code: '404',
+  title: '这一页找不到了',
+  desc: '地址可能写错了，或者这一页已经被挪走。挑个熟悉的地方回去吧。',
+  toColorLab: '回颜色实验室',
+  toDashboard: '去仪表盘',
 }
 
 export interface FluxLegacyUi {

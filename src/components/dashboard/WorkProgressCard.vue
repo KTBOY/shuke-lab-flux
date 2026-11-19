@@ -34,11 +34,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onScopeDispose, ref } from 'vue'
+import { onMounted, onScopeDispose, ref, watch } from 'vue'
 import { FoldBarChart } from 'sk-chart-duo'
 import type { FoldBarDatum, ThemePack, TooltipPart } from 'sk-chart-duo'
 import ProgressInsightPanel from '@/components/dashboard/ProgressInsightPanel.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
+import { useColorMode } from '@/composables/useColorMode'
+import { useDashboardTheme } from '@/composables/useDashboardTheme'
 import { crestioChartTheme } from '@/data/crestioChartTheme'
 import { PROGRESS_CARD, PROGRESS_DAYS, PROGRESS_WEEK_AVG } from '@/data/dashboard'
 
@@ -120,15 +122,40 @@ function createChart(el: HTMLElement, width: number): FoldBarChart {
   })
 }
 
+function mountChart(el: HTMLElement, width: number): void {
+  chart = createChart(el, width)
+  chart.on('column:enter', (payload) => {
+    readout.value = readoutOf(payload.datum)
+  })
+}
+
+/*
+ * 图表跟随换肤：皮肤是 setup 时从令牌现读的，主题一变就得整只重建（库没有换主题的接口）。
+ * 实验室应用主题时这张卡多半不在场，watch 只兜「卡片已挂载时切主题」的实时生效；
+ * 未挂载时靠下次进仪表盘 createChart 现读令牌，天然是新主题。
+ */
+/** 按当前令牌整只重建图表，桥接换肤与深浅切换共用这条路径 */
+function rebuildChart(): void {
+  const el = host.value
+  if (!el || !chart) return
+  chart.destroy()
+  chart = null
+  mountChart(el, lastWidth)
+}
+
+const { themeVersion } = useDashboardTheme()
+watch(themeVersion, rebuildChart)
+
+/* 深浅切换改的是中性令牌（图表的墨色阶/面色都读它），同样要整只重建才跟得上 */
+const { colorModeVersion } = useColorMode()
+watch(colorModeVersion, rebuildChart)
+
 onMounted(() => {
   const el = host.value
   if (!el) return
 
   lastWidth = el.getBoundingClientRect().width
-  chart = createChart(el, lastWidth)
-  chart.on('column:enter', (payload) => {
-    readout.value = readoutOf(payload.datum)
-  })
+  mountChart(el, lastWidth)
 
   observer = new ResizeObserver((entries) => {
     const entry = entries[entries.length - 1]

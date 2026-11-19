@@ -15,6 +15,57 @@
       </div>
 
       <div class="head__actions">
+        <button
+          type="button"
+          class="pill"
+          :disabled="selectedTheme === null"
+          :title="selectedTheme === null ? FLUX_STUDIO_UI.applyNeedSelect : undefined"
+          @click="applySelectedTheme"
+        >
+          <AppIcon :name="justAppliedEn ? 'check' : 'zap'" :size="13" class="pill__icon" />
+          <span>{{ applyLabel }}</span>
+        </button>
+
+        <button
+          v-if="currentThemeId !== null"
+          type="button"
+          class="pill"
+          @click="restoreDefaultTheme"
+        >
+          <AppIcon name="history" :size="13" class="pill__icon" />
+          <span>{{ FLUX_STUDIO_UI.restoreDefault }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="pill"
+          :disabled="selectedTheme === null"
+          :title="selectedTheme === null ? FLUX_STUDIO_UI.exportNeedSelect : undefined"
+          @click="exportSelectedTheme('css')"
+        >
+          <AppIcon
+            :name="justExported?.kind === 'css' ? 'check' : 'download'"
+            :size="13"
+            class="pill__icon"
+          />
+          <span>{{ exportCssLabel }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="pill"
+          :disabled="selectedTheme === null"
+          :title="selectedTheme === null ? FLUX_STUDIO_UI.exportNeedSelect : undefined"
+          @click="exportSelectedTheme('json')"
+        >
+          <AppIcon
+            :name="justExported?.kind === 'json' ? 'check' : 'download'"
+            :size="13"
+            class="pill__icon"
+          />
+          <span>{{ exportJsonLabel }}</span>
+        </button>
+
         <button type="button" class="pill" @click="flowRunning = !flowRunning">
           <AppIcon :name="flowRunning ? 'pause' : 'play'" :size="13" class="pill__icon" />
           <!-- 文案本身就说明动作，无需再加 aria-pressed 让屏幕阅读器重复播报状态 -->
@@ -73,11 +124,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onScopeDispose, ref } from 'vue'
 import FluxCapsule from '@/components/flux/FluxCapsule.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
+import { useDashboardTheme } from '@/composables/useDashboardTheme'
 import { COLOR_LAB_ENTRY, FLUX_STUDIO_UI } from '@/data/dashboard'
 import { FLUX_FILTER_ALL, FLUX_THEMES } from '@/data/fluxThemes'
+import { fluxThemeToCssText, fluxThemeToJson } from '@/data/themeBridge'
+import type { FluxTheme } from '@/data/fluxThemes'
 import { ROUTE_NAME } from '@/router'
 
 defineOptions({ name: 'Flux-Studio-View' })
@@ -123,6 +177,105 @@ function pad(value: number): string {
 }
 
 const counterText = computed(() => `${pad(visibleIds.value.size)} / ${pad(FLUX_THEMES.length)}`)
+
+/* —— 应用到仪表盘：实验室是主题引擎，选中哪套就把哪套桥接成全站令牌 —— */
+const { currentThemeId, applyTheme, clearTheme } = useDashboardTheme()
+
+/** 当前筛选选中的主题；「全部」没有单一选中项，应用按钮因此禁用并在 title 里给原因 */
+const selectedTheme = computed<FluxTheme | null>(() =>
+  activeFilter.value === FLUX_FILTER_ALL
+    ? null
+    : (FLUX_THEMES.find((theme) => theme.id === activeFilter.value) ?? null),
+)
+
+/** 应用成功后短暂显示的主题英文名，驱动按钮的「已应用 · AURORA」反馈 */
+const justAppliedEn = ref<string | null>(null)
+let feedbackTimer: ReturnType<typeof setTimeout> | null = null
+
+const applyLabel = computed(() =>
+  justAppliedEn.value
+    ? `${FLUX_STUDIO_UI.applyDone} · ${justAppliedEn.value}`
+    : FLUX_STUDIO_UI.applyToDashboard,
+)
+
+function applySelectedTheme(): void {
+  const theme = selectedTheme.value
+  if (!theme || !applyTheme(theme.id)) return
+
+  justAppliedEn.value = theme.en
+  if (feedbackTimer) clearTimeout(feedbackTimer)
+  feedbackTimer = setTimeout(() => {
+    justAppliedEn.value = null
+  }, 1600)
+}
+
+function restoreDefaultTheme(): void {
+  clearTheme()
+  justAppliedEn.value = null
+  if (feedbackTimer) clearTimeout(feedbackTimer)
+  feedbackTimer = null
+}
+
+/* —— 导出配色：把选中主题的桥接结果存成文件带走，内容口径与「应用到仪表盘」同一份 —— */
+
+/** 刚导出完的那种格式与主题英文名，驱动两个导出按钮各自的「已导出 · AURORA」反馈 */
+const justExported = ref<{ kind: 'css' | 'json'; en: string } | null>(null)
+let exportFeedbackTimer: ReturnType<typeof setTimeout> | null = null
+
+const exportCssLabel = computed(() =>
+  justExported.value?.kind === 'css'
+    ? `${FLUX_STUDIO_UI.exportDone} · ${justExported.value.en}`
+    : FLUX_STUDIO_UI.exportCss,
+)
+
+const exportJsonLabel = computed(() =>
+  justExported.value?.kind === 'json'
+    ? `${FLUX_STUDIO_UI.exportDone} · ${justExported.value.en}`
+    : FLUX_STUDIO_UI.exportJson,
+)
+
+/** 文本存成下载文件：Blob + 临时锚点，点完即摘锚点并回收对象 URL，不留残余 */
+function downloadTextFile(filename: string, text: string, mimeType: string): void {
+  const blob = new Blob([text], { type: mimeType })
+  const url = URL.createObjectURL(blob)
+  const anchor = document.createElement('a')
+  anchor.href = url
+  anchor.download = filename
+  document.body.appendChild(anchor)
+  anchor.click()
+  anchor.remove()
+  URL.revokeObjectURL(url)
+}
+
+function exportSelectedTheme(kind: 'css' | 'json'): void {
+  const theme = selectedTheme.value
+  if (!theme) return
+
+  if (kind === 'css') {
+    downloadTextFile(
+      `flux-${theme.id}-theme.css`,
+      fluxThemeToCssText(theme),
+      'text/css;charset=utf-8',
+    )
+  } else {
+    downloadTextFile(
+      `flux-${theme.id}-theme.json`,
+      fluxThemeToJson(theme),
+      'application/json;charset=utf-8',
+    )
+  }
+
+  justExported.value = { kind, en: theme.en }
+  if (exportFeedbackTimer) clearTimeout(exportFeedbackTimer)
+  exportFeedbackTimer = setTimeout(() => {
+    justExported.value = null
+  }, 1600)
+}
+
+onScopeDispose(() => {
+  if (feedbackTimer) clearTimeout(feedbackTimer)
+  if (exportFeedbackTimer) clearTimeout(exportFeedbackTimer)
+})
 </script>
 
 <style scoped>
@@ -204,6 +357,18 @@ const counterText = computed(() => `${pad(visibleIds.value.size)} / ${pad(FLUX_T
 
 .pill:active {
   transform: translateY(0);
+}
+
+/* 禁用态（如未选主题时的应用按钮）：压掉 hover 的上浮与变色，只留可读的灰阶 */
+.pill:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.pill:disabled:hover {
+  border-color: var(--c-line);
+  color: var(--c-ink-2);
+  transform: none;
 }
 
 .pill__icon {
