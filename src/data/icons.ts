@@ -27,6 +27,7 @@ export type IconName =
   | 'globe'
   | 'code-branch'
   | 'external-link'
+  | 'network'
 
 /** 图标图元：path 用 d 描述，dot 用圆心半径描述 */
 export interface IconShape {
@@ -123,5 +124,13 @@ export const ICON_SHAPES: Record<IconName, IconShape[]> = {
     { d: 'M13.4 5.4h5.2v5.2' },
     { d: 'M18.6 5.4 10.4 13.6' },
     { d: 'M17 13.6v4.2a1.8 1.8 0 0 1-1.8 1.8H6a1.8 1.8 0 0 1-1.8-1.8V8.4A1.8 1.8 0 0 1 6 6.6h4.2' },
+  ],
+  /* 星图节点：三个圆点由连线串成网络，权限星图入口与图例共用 */
+  network: [
+    { d: 'M7.6 15.9 10.7 8.5' },
+    { d: 'M13.9 7.7 15.9 12.2' },
+    { cx: 6.2, cy: 18, r: 2.5 },
+    { cx: 12, cy: 6.2, r: 2.5 },
+    { cx: 17.8, cy: 14.5, r: 2.5 },
   ],
 }

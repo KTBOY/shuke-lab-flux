@@ -13,8 +13,11 @@ import type { IconName } from '@/data/icons'
 export const AVATARS = [avatar1, avatar2, avatar3, avatar4] as const
 
 /* ---------------- 顶部导航 ---------------- */
-/** 菜单里唯一真正跳转的一项，标签常量供 AppNavbar 判定渲染成路由链接 */
+/** 菜单里真正跳转的项，标签常量供 AppNavbar 判定渲染成路由链接 */
 export const COLOR_LAB_NAV_LABEL = '颜色实验室'
+
+/** 权限星图入口标签，同样是真跳转项 */
+export const PERMISSIONS_NAV_LABEL = '权限星图'
 
 /** 还没有对应页面的菜单项，暂收起来；补上页面后拼回 NAV_ITEMS 即可 */
 export const PLACEHOLDER_NAV_ITEMS = [
@@ -27,7 +30,7 @@ export const PLACEHOLDER_NAV_ITEMS = [
   '评价',
 ] as const
 
-export const NAV_ITEMS = ['仪表盘', COLOR_LAB_NAV_LABEL] as const
+export const NAV_ITEMS = ['仪表盘', PERMISSIONS_NAV_LABEL, COLOR_LAB_NAV_LABEL] as const
 
 export const ACTIVE_NAV = '仪表盘'
 
@@ -431,6 +434,14 @@ export interface FluxStudioUi {
   toLegacy: string
   /** 计数器的分母说明，如「套主题」 */
   counterUnit: string
+  /** 把当前选中的 FLUX 主题应用为全站仪表盘主题的按钮文案 */
+  applyToDashboard: string
+  /** 应用成功后按钮短暂显示的反馈文案，后接主题英文名 */
+  applyDone: string
+  /** 筛选为「全部」时应用按钮禁用，title 里给出的原因 */
+  applyNeedSelect: string
+  /** 恢复 tokens.css 默认主题的按钮文案 */
+  restoreDefault: string
 }
 
 export const FLUX_STUDIO_UI: FluxStudioUi = {
@@ -441,6 +452,10 @@ export const FLUX_STUDIO_UI: FluxStudioUi = {
   hint: '把指针放进胶囊里划动，云雾会被搅动，停下后约一秒平滑回落',
   toLegacy: '旧版单文件页',
   counterUnit: '套主题',
+  applyToDashboard: '应用到仪表盘',
+  applyDone: '已应用',
+  applyNeedSelect: '先在左栏选一套主题，再应用到仪表盘',
+  restoreDefault: '恢复默认主题',
 }
 
 export interface FluxLegacyUi {
