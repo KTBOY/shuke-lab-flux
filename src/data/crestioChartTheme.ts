@@ -32,30 +32,35 @@ export function crestioChartTheme(): ThemePack {
   const ink4 = token('--c-ink-4')
   const line = token('--c-line')
   const surface = token('--c-surface')
-  const surfaceCard = token('--c-surface-card')
 
   // 形参类型让字面量按元组而非 number[] 推断，省掉每处 as const
   const gradient = (...pairs: Array<[number, string]>): GradientStop[] => pairs
 
   return {
     style: {
-      // 闲置柱：琥珀由深到浅落回卡片底色（--c-surface-card 的同色相）
+      /**
+       * 闲置柱平涂浅档：accent 30% 两端同色，不再渐变落回卡面底色。
+       * 旧渐变让柱底「溶」进背景，长度编码的共同基线被吃掉，柱高只能靠读柱顶数字比；
+       * 平涂后柱体与卡面之间始终有一条明确的底边，长度才可比。
+       * 30% 走 alpha 后缀（与 washGradient 同一条路径），色相仍是令牌原色。
+       */
       barGradient: {
-        normal: gradient([0, accentDeep], [0.42, accent], [0.82, accentSoft], [1, surfaceCard]),
+        normal: gradient([0, alpha(accent, '4D')], [1, alpha(accent, '4D')]),
         /**
-         * 高亮柱不出色族，靠"下半截不化进背景"来区分：闲置柱尾部落到 --c-surface-card 就等于消失，
-         * 高亮柱整根保住饱和度。墨色阶（--c-dark）会把峰值柱画成暖卡里唯一的黑块，
+         * 高亮柱保留渐变（深阶 → 主色），与闲置柱的平涂拉开区分；桥接后两端已是同色相
+         * （accent-deep 由 accent 同色深阶派生），渐变只剩明度差，不再跨色。
+         * 墨色阶（--c-dark）会把峰值柱画成暖卡里唯一的黑块，
          * 而这条渐变同时就是悬停态——等于每一根柱悬停上去都闪一次黑。
          */
         active: gradient([0, accentDeep], [0.55, accent], [1, accent]),
       },
       /**
-       * 斜纹照抄 StatOverview 的 .bar--striped：
-       * repeating-linear-gradient(122deg, rgba(23,23,26,.28) 0 1px, transparent 1px 8px)
-       * 即 8px 周期 / 1px 线宽 / 墨色 .28 不透明度 / 122 度。
+       * 斜纹关闭：它原先照抄 StatOverview 的 striped 胶囊，两处是一套纹理语言；
+       * 胶囊已统一为轨道 + 平涂填充（斜纹没有留下明确语义），图表这边一并关掉，
+       * 免得同一屏里斜纹在柱子上继续无义地存在。
        */
       stripePattern: {
-        enabled: true,
+        enabled: false,
         size: 8,
         lineWidth: 1,
         lineColor: ink,

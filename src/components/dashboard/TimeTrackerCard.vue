@@ -1,6 +1,6 @@
 <!--
  * @Author: zlc
- * @Description: 工时计时卡片 —— 环形进度 + 工时读数，播放/暂停控制真实计时
+ * @Description: 工时计时卡片 —— 横排紧凑布局：环形进度 + 读数一侧、基线与播放/暂停控制一侧，不再竖着撑出大半张空卡
 -->
 <template>
   <section class="panel tracker">
@@ -11,41 +11,46 @@
       </button>
     </header>
 
-    <div class="tracker__ring" :class="{ 'is-running': isRunning }" :style="{ '--p': progress }">
-      <div class="tracker__ticks" />
-      <div class="tracker__center">
-        <strong class="tracker__value tnum">{{ display }}</strong>
-        <span class="tracker__caption">{{ TIME_TRACKER_CARD.caption }}</span>
+    <div class="tracker__body">
+      <div class="tracker__ring" :class="{ 'is-running': isRunning }" :style="{ '--p': progress }">
+        <div class="tracker__ticks" />
+        <div class="tracker__center">
+          <strong class="tracker__value tnum">{{ display }}</strong>
+          <span class="tracker__caption">{{ TIME_TRACKER_CARD.caption }}</span>
+        </div>
       </div>
-    </div>
-    <p class="tracker__baseline">{{ TIME_TRACKER_CARD.targetLabel }}</p>
 
-    <div class="tracker__controls">
-      <div class="tracker__group">
-        <button
-          type="button"
-          class="tracker__btn"
-          :class="{ 'is-on': isRunning }"
-          :aria-pressed="isRunning"
-          aria-label="开始计时"
-          @click="start"
-        >
-          <AppIcon name="play" :size="13" />
-        </button>
-        <button
-          type="button"
-          class="tracker__btn"
-          :class="{ 'is-on': !isRunning }"
-          :aria-pressed="!isRunning"
-          aria-label="暂停计时"
-          @click="pause"
-        >
-          <AppIcon name="pause" :size="13" />
-        </button>
+      <div class="tracker__side">
+        <p class="tracker__baseline">{{ TIME_TRACKER_CARD.targetLabel }}</p>
+
+        <div class="tracker__controls">
+          <div class="tracker__group">
+            <button
+              type="button"
+              class="tracker__btn"
+              :class="{ 'is-on': isRunning }"
+              :aria-pressed="isRunning"
+              aria-label="开始计时"
+              @click="start"
+            >
+              <AppIcon name="play" :size="13" />
+            </button>
+            <button
+              type="button"
+              class="tracker__btn"
+              :class="{ 'is-on': !isRunning }"
+              :aria-pressed="!isRunning"
+              aria-label="暂停计时"
+              @click="pause"
+            >
+              <AppIcon name="pause" :size="13" />
+            </button>
+          </div>
+          <button type="button" class="tracker__btn tracker__btn--dark" aria-label="历史记录">
+            <AppIcon name="history" :size="14" />
+          </button>
+        </div>
       </div>
-      <button type="button" class="tracker__btn tracker__btn--dark" aria-label="历史记录">
-        <AppIcon name="history" :size="14" />
-      </button>
     </div>
   </section>
 </template>
@@ -75,13 +80,21 @@ const progress = computed(() =>
   padding: 12px;
 }
 
+/* 环与控制同行：卡片高度由环（92px）决定，而不是竖排元素的总和 */
+.tracker__body {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+}
+
 .tracker__ring {
   position: relative;
   display: grid;
   place-items: center;
-  width: 108px;
+  flex: none;
+  width: 92px;
   aspect-ratio: 1;
-  margin: 8px auto 0;
 }
 
 .tracker__ring::before {
@@ -135,7 +148,7 @@ const progress = computed(() =>
 }
 
 .tracker__value {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 300;
   letter-spacing: 0.01em;
   line-height: 1;
@@ -146,10 +159,19 @@ const progress = computed(() =>
   color: var(--c-ink-3);
 }
 
-/* 环下的一词基线：圆环的分母（目标时长），与环同宽居中 */
+/* 右侧一列：基线在上、控制在下，整体靠右与详情按钮同侧收尾 */
+.tracker__side {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* 环的一词基线：圆环的分母（目标时长） */
 .tracker__baseline {
-  margin: 6px 0 0;
-  text-align: center;
+  margin: 0;
   font-size: var(--fs-mini);
   color: var(--c-ink-3);
 }
@@ -157,9 +179,7 @@ const progress = computed(() =>
 .tracker__controls {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
-  padding-top: 10px;
+  gap: 8px;
 }
 
 .tracker__group {

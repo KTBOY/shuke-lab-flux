@@ -1,13 +1,16 @@
 <!--
  * @Author: zlc
- * @Description: 仪表盘视图 —— 标题行（本周基线 + 问候副行与颜色实验室入口）、指标区、三栏卡片栅格与整行工时图（容器查询三档降级）
+ * @Description: 仪表盘视图 —— 标题行（本周基线 + 问候副行、示例数据角标与颜色实验室入口）、指标区、卡片栅格（容器查询降级，超宽屏四列）
 -->
 <template>
   <div class="dashboard">
     <div class="hero">
       <div class="hero__text">
         <h1 class="hero__title">{{ DASHBOARD_WEEK_LABEL }}</h1>
-        <p class="hero__sub">{{ WELCOME_TITLE }}</p>
+        <p class="hero__sub">
+          {{ WELCOME_TITLE }}
+          <SampleBadge />
+        </p>
       </div>
 
       <RouterLink class="hero__entry" :to="{ name: ROUTE_NAME.colorLab }">
@@ -50,6 +53,7 @@ import InsightCard from '@/components/dashboard/InsightCard.vue'
 import OnboardingCard from '@/components/dashboard/OnboardingCard.vue'
 import OnboardingTaskCard from '@/components/dashboard/OnboardingTaskCard.vue'
 import ScheduleCard from '@/components/dashboard/ScheduleCard.vue'
+import SampleBadge from '@/components/dashboard/SampleBadge.vue'
 import StatOverview from '@/components/dashboard/StatOverview.vue'
 import TimeTrackerCard from '@/components/dashboard/TimeTrackerCard.vue'
 import WorkProgressCard from '@/components/dashboard/WorkProgressCard.vue'
@@ -96,6 +100,9 @@ defineOptions({ name: 'Dashboard-View' })
 }
 
 .hero__sub {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin: 0;
   font-size: var(--fs-body);
   color: var(--c-ink-3);
@@ -205,6 +212,18 @@ defineOptions({ name: 'Dashboard-View' })
   align-items: stretch;
 }
 
+/*
+ * —— 超宽屏：四列并行，工时图收成第四列 ——
+ * 三列等比拉宽只会把空洞放大（照片裁成横幅、计时环更孤单）；
+ * 宽度涨上 2560 后改为四列，让多出来的宽度换成密度而不是拉伸。
+ */
+@container stage (min-width: 2560px) {
+  .board {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-areas: 'left stack right progress';
+  }
+}
+
 /* —— 平板：左右两栏在上，中栏与进度图依次整幅落下 —— */
 @container stage (max-width: 1080px) {
   .board {
@@ -225,6 +244,11 @@ defineOptions({ name: 'Dashboard-View' })
       'stack'
       'right'
       'progress';
+  }
+
+  /* 并排的两卡在手机宽下各只剩约 165px，洞察数字与基线互相挤压，改单列纵排 */
+  .board__pair {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

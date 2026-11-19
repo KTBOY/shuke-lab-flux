@@ -9,7 +9,9 @@ import type { FluxRgb, FluxTheme } from '@/data/fluxThemes'
 /**
  * 映射口径（定死在此，改口径先改这段注释再改代码）：
  * - colors[1] 是三色里通常最饱和的中间色 → --c-accent 品牌强调主色；
- * - colors[0] 是渐变的起始端 → --c-accent-deep 渐变深端与图表高亮柱，两端同源才不出色族；
+ * - --c-accent-deep 取 accent 向黑混合的同色深阶（见 ACCENT_DEEP_SHADE），不再取 colors[0]：
+ *   AURORA 的 colors[0] 是绿、colors[1] 是蓝，旧口径让图表渐变两端跨色相（绿→蓝），
+ *   每根柱子都饱和且 delta 描边借来一个「成功绿」的含义；同色深阶后渐变只剩明度差；
  * - colors[2] 向白色混合 88% → --c-accent-soft 渐变浅端与胶囊底色：原色太饱和，
  *   直接当浅底会抢内容，只能留一成色相；
  * - colors[2] 原色 → 星图 --star-accent，--star-accent-soft / --star-glow 取它向白的
@@ -32,8 +34,14 @@ export const BRIDGE_TOKEN_NAMES: readonly string[] = [
 const SOFT_MIX = 0.88
 /** 星图光晕的混白比例：比 soft 更亮一档，落在 soft 与原色之间偏亮处 */
 const GLOW_MIX = 0.55
+/**
+ * accent-deep 的同色深阶比例：accent 向黑混合 20%。
+ * 只压明度、不动色相，图表渐变两端因此同色；比例再大蓝紫系会发灰，20% 是深阶感与色相纯净的折中。
+ */
+export const ACCENT_DEEP_SHADE = 0.2
 
 const WHITE: FluxRgb = [1, 1, 1]
+const BLACK: FluxRgb = [0, 0, 0]
 
 function clamp01(value: number): number {
   return Math.min(1, Math.max(0, value))
@@ -56,10 +64,10 @@ export function mixFluxRgb(a: FluxRgb, b: FluxRgb, ratio: number): FluxRgb {
 
 /** 一套 FLUX 主题 → 仪表盘令牌映射表（键即 BRIDGE_TOKEN_NAMES，顺序与之一致） */
 export function fluxThemeToTokens(theme: FluxTheme): Record<string, string> {
-  const [first, second, third] = theme.colors
+  const [, second, third] = theme.colors
   return {
     '--c-accent': fluxRgbToHex(second),
-    '--c-accent-deep': fluxRgbToHex(first),
+    '--c-accent-deep': fluxRgbToHex(mixFluxRgb(second, BLACK, ACCENT_DEEP_SHADE)),
     '--c-accent-soft': fluxRgbToHex(mixFluxRgb(third, WHITE, SOFT_MIX)),
     '--star-accent': fluxRgbToHex(third),
     '--star-accent-soft': fluxRgbToHex(mixFluxRgb(third, WHITE, SOFT_MIX)),

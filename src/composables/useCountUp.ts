@@ -24,6 +24,14 @@ export interface UseCountUp {
   value: Ref<number>
   /** 当前帧的展示文案（已格式化） */
   text: Ref<string>
+  /** 是否已落定：动画走完（或减动效直达终值）后为 true，销毁前未走完则一直是 false */
+  settled: Ref<boolean>
+  /**
+   * 落定后才写入的终值文案，动画期间恒为空串。
+   * 给 aria-live 区域专用：逐帧变的 text 若挂在 live 区，读屏会把中间值逐个念出；
+   * live 区只放 finalText，落定那一刻一次性写入终值、只播报一次。
+   */
+  finalText: Ref<string>
 }
 
 /** 格式化所需的定版参数：创建时从可选项收口成必填，逐帧渲染不再判空 */
@@ -53,12 +61,21 @@ export function useCountUp(target: number, options: UseCountUpOptions = {}): Use
   }
   const value = ref(0)
   const text = ref(formatValue(0, format))
+  const settled = ref(false)
+  const finalText = ref('')
   let rafId: number | null = null
   let startAt: number | null = null
 
   function render(raw: number): void {
     value.value = raw
     text.value = formatValue(raw, format)
+  }
+
+  /** 落定：终值写入展示与 live 专用文案，settled 只翻一次 */
+  function settle(): void {
+    render(target)
+    settled.value = true
+    finalText.value = formatValue(target, format)
   }
 
   function cancel(): void {
@@ -77,19 +94,19 @@ export function useCountUp(target: number, options: UseCountUpOptions = {}): Use
     if (progress < 1) {
       rafId = requestAnimationFrame(tick)
     } else {
-      /* 最后一帧强制落终值，抹掉浮点尾差 */
-      render(target)
+      /* 最后一帧强制落终值，抹掉浮点尾差，同时把终值一次性交给 live 区 */
+      settle()
       rafId = null
     }
   }
 
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    render(target)
+    settle()
   } else {
     rafId = requestAnimationFrame(tick)
   }
 
   onScopeDispose(cancel)
 
-  return { value, text }
+  return { value, text, settled, finalText }
 }

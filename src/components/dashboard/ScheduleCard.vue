@@ -1,6 +1,6 @@
 <!--
  * @Author: zlc
- * @Description: 日程卡 —— 月份可前后切换，表头按基准日实时推算，虚线网格与排期事件
+ * @Description: 日程卡 —— 月份可前后切换，表头按基准日实时推算；事件按显示月份过滤，无事件的月份给空状态
 -->
 <template>
   <section class="panel schedule">
@@ -9,7 +9,10 @@
         {{ prevMonthLabel }}
       </button>
 
-      <h2 class="schedule__title" :key="monthTitle">{{ monthTitle }}</h2>
+      <div class="schedule__titlewrap">
+        <h2 class="schedule__title" :key="monthTitle">{{ monthTitle }}</h2>
+        <SampleBadge />
+      </div>
 
       <button type="button" class="schedule__month" aria-label="下一月" @click="shiftMonth(1)">
         {{ nextMonthLabel }}
@@ -42,13 +45,13 @@
         </template>
 
         <article
-          v-for="event in SCHEDULE_EVENTS"
+          v-for="event in visibleEvents"
           :key="event.title"
           class="event"
           :class="`event--${event.theme}`"
           :style="{
             gridColumn: `${event.col + 1} / span ${event.span}`,
-            gridRow: `${event.row + 1}`,
+            gridRow: `${event.row + 1} / span 2`,
           }"
         >
           <div class="event__meta">
@@ -57,6 +60,13 @@
           </div>
           <AvatarStack class="event__people" :images="event.avatars" :size="20" />
         </article>
+
+        <!-- 无事件的月份：网格照常画，中间一块空状态说明这不是渲染坏了 -->
+        <EmptyState
+          v-if="visibleEvents.length === 0"
+          class="schedule__empty"
+          :label="SCHEDULE_EMPTY_LABEL"
+        />
       </div>
     </div>
   </section>
@@ -64,8 +74,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import EmptyState from '@/components/dashboard/EmptyState.vue'
+import SampleBadge from '@/components/dashboard/SampleBadge.vue'
 import AvatarStack from '@/components/ui/AvatarStack.vue'
-import { CALENDAR, SCHEDULE_EVENTS, WEEKDAY_LABELS } from '@/data/dashboard'
+import { CALENDAR, SCHEDULE_EMPTY_LABEL, SCHEDULE_EVENTS, WEEKDAY_LABELS } from '@/data/dashboard'
 import type { CalendarDay } from '@/data/dashboard'
 
 defineOptions({ name: 'Dashboard-ScheduleCard' })
@@ -110,9 +122,15 @@ const monthDays = computed<CalendarDay[]>(() =>
     return {
       weekday: WEEKDAY_LABELS[date.getDay()],
       date: date.getDate(),
+      /* 「今天」只属于锚定月：切走之后还亮着，就是拿示例数据冒充当前日期 */
       today: monthOffset.value === 0 && index === CALENDAR.todayIndex,
     }
   }),
+)
+
+/** 事件按显示月份过滤：每个月只露自己的事件，没有的月份走空状态 */
+const visibleEvents = computed(() =>
+  SCHEDULE_EVENTS.filter((event) => event.monthOffset === monthOffset.value),
 )
 
 function shiftMonth(step: number): void {
@@ -151,10 +169,26 @@ function shiftMonth(step: number): void {
   color: var(--c-ink);
 }
 
+.schedule__titlewrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
 .schedule__title {
   font-size: 13px;
   font-weight: 500;
   animation: fade-in 0.22s ease backwards;
+}
+
+/* 空状态浮在网格中央：跨全部列与时间行居中，网格本身照常画出来 */
+.schedule__empty {
+  z-index: 1;
+  grid-column: 1 / -1;
+  grid-row: 2 / -1;
+  align-self: center;
+  justify-self: center;
 }
 
 @keyframes fade-in {
@@ -174,6 +208,11 @@ function shiftMonth(step: number): void {
   display: grid;
   flex: 1;
   grid-template-columns: 44px repeat(var(--cols), 1fr);
+  /*
+   * 行高用 1fr 均分：不定高时 fr 行会被拉平到最高一行的内容高，
+   * 事件若只占 1 行（约 47px），十行全被顶到 47px、整卡凭空涨高一倍；
+   * 事件跨 2 行后单行贡献减半，网格内在高度回到时间标签与事件的折中档。
+   */
   grid-template-rows: 30px repeat(var(--rows), minmax(0, 1fr));
   margin-top: 4px;
 }
@@ -276,6 +315,12 @@ function shiftMonth(step: number): void {
     overflow-x: auto;
     padding-bottom: 4px;
     overscroll-behavior-x: contain;
+    /*
+     * 右缘渐隐：告诉读者右边还有列没露完，
+     * 免得事件块贴着卡边被切掉时第一眼像渲染坏了。
+     */
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent 100%);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent 100%);
   }
 
   .schedule__grid {

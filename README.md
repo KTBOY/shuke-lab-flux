@@ -21,17 +21,17 @@
 
 管理区页面会先经过**演示模式登录**(可选演示身份后输入任意非空密码,也可一键体验;它用于展示登录与守卫流程,不是生产级鉴权)。点击下面的在线体验链接,登录后会按原目标页回跳。
 
-| 功能 | 一句话卖点 | 在线体验 |
-| --- | --- | --- |
-| **FLUX 流体颜色实验室 / Fluid Color Lab** | 6 套主题在 WebGL 玻璃胶囊里持续流动,悬停与搅动都会改变烟雾速度。 | [打开实验室](https://ktboy.github.io/shuke-lab-flux/#/) |
-| **仪表盘动效 / Animated Dashboard** | 卡片以弹簧曲线错峰弹射归位,KPI 数字滚动抵达目标值,不是静态截图式后台。 | [打开仪表盘](https://ktboy.github.io/shuke-lab-flux/#/dashboard) |
-| **权限星图 / Permission Star Map** | 把用户、角色、菜单画成带刻度的星图:点角色看分支生长,点用户看光点沿权限链追溯。 | [打开权限星图](https://ktboy.github.io/shuke-lab-flux/#/permissions) |
-| **配色一键换肤与导出 / One-click Theme & Export** | 在实验室点「应用到仪表盘」,仪表盘强调色与图表立即跟随 FLUX 配色并持久保存,还能导出 CSS / JSON。 | [从实验室开始](https://ktboy.github.io/shuke-lab-flux/#/) |
-| **深色模式 / Dark Mode** | 中性设计令牌整套切换为暖灰暗色阶梯,与实验室应用主题互不冲突,选择会保留。 | [进入仪表盘切换](https://ktboy.github.io/shuke-lab-flux/#/dashboard) |
-| **⌘K 命令面板与权限问答 / Command Palette & Permission Q&A** | 不只搜页面和动作,还能问「谁能导出数据?」,直接返回用户 → 角色 → 菜单链路。 | [打开后按 ⌘K](https://ktboy.github.io/shuke-lab-flux/#/permissions) |
-| **用户管理 CRUD / User Management** | 13 位演示用户支持搜索、排序、分页、新增、编辑、启停、删除确认与空状态。 | [打开用户管理](https://ktboy.github.io/shuke-lab-flux/#/users) |
-| **演示登录与路由守卫 / Demo Auth & Route Guard** | 登录按钮会收成圆并画出对勾;未登录访问管理区会被送到登录页,登录后回到原目标。 | [打开登录页](https://ktboy.github.io/shuke-lab-flux/#/login) |
-| **404 页面 / Not Found** | 错误路径不再白屏,页面保留一颗 FLUX 胶囊,并提供回实验室与去仪表盘两个入口。 | [试一个不存在的路径](https://ktboy.github.io/shuke-lab-flux/#/lost-page) |
+| 功能                                                         | 一句话卖点                                                                                      | 在线体验                                                                 |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| **FLUX 流体颜色实验室 / Fluid Color Lab**                    | 6 套主题在 WebGL 玻璃胶囊里持续流动,悬停与搅动都会改变烟雾速度。                                | [打开实验室](https://ktboy.github.io/shuke-lab-flux/#/)                  |
+| **仪表盘动效 / Animated Dashboard**                          | 卡片以弹簧曲线错峰弹射归位,KPI 数字滚动抵达目标值,不是静态截图式后台。                          | [打开仪表盘](https://ktboy.github.io/shuke-lab-flux/#/dashboard)         |
+| **权限星图 / Permission Star Map**                           | 把用户、角色、菜单画成带刻度的星图:点角色看分支生长,点用户看光点沿权限链追溯。                  | [打开权限星图](https://ktboy.github.io/shuke-lab-flux/#/permissions)     |
+| **配色一键换肤与导出 / One-click Theme & Export**            | 在实验室点「应用到仪表盘」,仪表盘强调色与图表立即跟随 FLUX 配色并持久保存,还能导出 CSS / JSON。 | [从实验室开始](https://ktboy.github.io/shuke-lab-flux/#/)                |
+| **深色模式 / Dark Mode**                                     | 中性设计令牌整套切换为暖灰暗色阶梯,与实验室应用主题互不冲突,选择会保留。                        | [进入仪表盘切换](https://ktboy.github.io/shuke-lab-flux/#/dashboard)     |
+| **⌘K 命令面板与权限问答 / Command Palette & Permission Q&A** | 不只搜页面和动作,还能问「谁能导出数据?」,直接返回用户 → 角色 → 菜单链路。                       | [打开后按 ⌘K](https://ktboy.github.io/shuke-lab-flux/#/permissions)      |
+| **用户管理 CRUD / User Management**                          | 13 位演示用户支持搜索、排序、分页、新增、编辑、启停、删除确认与空状态。                         | [打开用户管理](https://ktboy.github.io/shuke-lab-flux/#/users)           |
+| **演示登录与路由守卫 / Demo Auth & Route Guard**             | 登录按钮会收成圆并画出对勾;未登录访问管理区会被送到登录页,登录后回到原目标。                    | [打开登录页](https://ktboy.github.io/shuke-lab-flux/#/login)             |
+| **404 页面 / Not Found**                                     | 错误路径不再白屏,页面保留一颗 FLUX 胶囊,并提供回实验室与去仪表盘两个入口。                      | [试一个不存在的路径](https://ktboy.github.io/shuke-lab-flux/#/lost-page) |
 
 ### 界面速览
 
