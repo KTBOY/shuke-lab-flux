@@ -22,6 +22,17 @@
           </RouterLink>
 
           <RouterLink
+            v-else-if="item === USERS_NAV_LABEL"
+            class="nav__item"
+            :class="{ 'is-active': item === activeLabel }"
+            :aria-current="item === activeLabel ? 'page' : undefined"
+            :data-label="item"
+            :to="{ name: ROUTE_NAME.users }"
+          >
+            {{ item }}
+          </RouterLink>
+
+          <RouterLink
             v-else-if="item === PERMISSIONS_NAV_LABEL"
             class="nav__item"
             :class="{ 'is-active': item === activeLabel }"
@@ -142,6 +153,7 @@ import {
   NAV_ITEMS,
   PERMISSIONS_NAV_LABEL,
   SETTING_LABEL,
+  USERS_NAV_LABEL,
 } from '@/data/dashboard'
 import { ROUTE_NAME } from '@/router'
 
@@ -160,12 +172,13 @@ const activeNav = ref<string>(ACTIVE_NAV)
 const linksOpen = ref(false)
 const linksWrap = ref<HTMLElement | null>(null)
 
-/** 实验室两项（Vue 版与旧版单文件）共用一个入口、星图自成一项，高亮跟着路由走；其余是模板里的占位菜单 */
+/** 实验室两项（Vue 版与旧版单文件）共用一个入口，用户管理与星图各自成项，高亮跟着路由走；其余是模板里的占位菜单 */
 const activeLabel = computed(() => {
   if (route.name === ROUTE_NAME.colorLab || route.name === ROUTE_NAME.colorLabLegacy) {
     return COLOR_LAB_NAV_LABEL
   }
   if (route.name === ROUTE_NAME.permissions) return PERMISSIONS_NAV_LABEL
+  if (route.name === ROUTE_NAME.users) return USERS_NAV_LABEL
   return activeNav.value
 })
 
