@@ -1,6 +1,6 @@
 /**
  * @Author: zlc
- * @Description: 路由表 —— 外壳常驻，四个页面（FLUX Vue 版 / 仪表盘 / 权限星图 / FLUX 旧版单文件）挂在其下
+ * @Description: 路由表 —— 外壳常驻，五个页面（FLUX Vue 版 / 仪表盘 / 权限星图 / FLUX 旧版单文件 / 404）挂在其下
  */
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
@@ -13,6 +13,7 @@ export const ROUTE_NAME = {
   permissions: 'permissions',
   colorLab: 'color-lab',
   colorLabLegacy: 'color-lab-legacy',
+  notFound: 'not-found',
 } as const
 
 const routes: RouteRecordRaw[] = [
@@ -48,6 +49,12 @@ const routes: RouteRecordRaw[] = [
         name: ROUTE_NAME.colorLabLegacy,
         // 旧版是 iframe 承载的零依赖单文件，与 Vue 版并列保留
         component: () => import('@/views/ColorLabLegacyView.vue'),
+      },
+      {
+        // 兜底必须排在最后：哈希里写了不存在的路径时落到 404 页，而不是外壳里一片空白
+        path: ':pathMatch(.*)*',
+        name: ROUTE_NAME.notFound,
+        component: () => import('@/views/NotFoundView.vue'),
       },
     ],
   },
