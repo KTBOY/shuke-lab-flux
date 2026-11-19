@@ -12,6 +12,8 @@ async function useStore() {
 }
 
 const initialDone = ONBOARDING_TASKS.items.filter((item) => item.done).length
+/** 总数没有独立字段：期望一律由清单本身派生，数据增删行时用例自动跟随 */
+const expectedTotal = ONBOARDING_TASKS.items.length
 
 beforeEach(() => {
   vi.resetModules()
@@ -19,11 +21,12 @@ beforeEach(() => {
 
 describe('useOnboardingTasks', () => {
   it('初始计数与数据源一致', async () => {
-    const { doneCount, restCount, total } = await useStore()
+    const { doneCount, restCount, completionRate, total } = await useStore()
 
     expect(doneCount.value).toBe(initialDone)
-    expect(total).toBe(ONBOARDING_TASKS.total)
+    expect(total).toBe(expectedTotal)
     expect(restCount.value).toBe(total - initialDone)
+    expect(completionRate.value).toBe(Math.round((initialDone / expectedTotal) * 100))
   })
 
   it('勾选未完成任务时完成数加一、剩余数减一', async () => {
@@ -34,7 +37,7 @@ describe('useOnboardingTasks', () => {
     toggle(pending.title)
 
     expect(doneCount.value).toBe(initialDone + 1)
-    expect(restCount.value).toBe(ONBOARDING_TASKS.total - initialDone - 1)
+    expect(restCount.value).toBe(expectedTotal - initialDone - 1)
   })
 
   it('重复点击回到原态，两个计数也回到原值', async () => {
