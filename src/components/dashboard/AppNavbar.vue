@@ -60,6 +60,17 @@
     </div>
 
     <div class="nav__actions">
+      <button
+        type="button"
+        class="nav__search"
+        :aria-label="COMMAND_PALETTE_UI.triggerAriaLabel"
+        @click="openPalette"
+      >
+        <AppIcon name="search" :size="14" />
+        <span class="nav__search-label">{{ COMMAND_PALETTE_UI.triggerLabel }}</span>
+        <kbd class="nav__search-kbd">⌘K</kbd>
+      </button>
+
       <div ref="linksWrap" class="nav__links">
         <button
           type="button"
@@ -121,6 +132,8 @@ import type { CSSProperties } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import { useColorMode } from '@/composables/useColorMode'
+import { useCommandPalette } from '@/composables/useCommandPalette'
+import { COMMAND_PALETTE_UI } from '@/data/commandPalette'
 import {
   ACTIVE_NAV,
   AUTHOR,
@@ -139,6 +152,9 @@ const router = useRouter()
 
 /** 深浅模式与桥接主题正交：这里只管 data-theme，accent 仍归实验室主题 */
 const { isDark, toggleColorMode } = useColorMode()
+
+/** 命令面板开关是模块级单例：胶囊只负责唤出，面板本体挂在 AppShell */
+const { openPalette } = useCommandPalette()
 
 const activeNav = ref<string>(ACTIVE_NAV)
 const linksOpen = ref(false)
@@ -417,6 +433,37 @@ onScopeDispose(() => {
   justify-self: end;
 }
 
+/* 命令面板入口胶囊：与设置按钮同高同面，右侧 kbd 是快捷键提示而非装饰 */
+.nav__search {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 12px 0 14px;
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  color: var(--c-ink-3);
+  font-size: var(--fs-mini);
+  white-space: nowrap;
+  transition:
+    color 0.16s ease,
+    background-color 0.25s ease;
+}
+
+.nav__search:hover {
+  color: var(--c-ink);
+}
+
+.nav__search-kbd {
+  padding: 1px 6px;
+  border: 1px solid var(--c-line);
+  border-radius: 6px;
+  background: var(--c-canvas);
+  color: var(--c-ink-3);
+  font-size: var(--fs-mini);
+  letter-spacing: 0.03em;
+}
+
 .nav__links {
   position: relative;
 }
@@ -538,6 +585,11 @@ onScopeDispose(() => {
   .nav__item {
     padding: 6px 11px;
   }
+
+  /* 中档先收快捷键徽标，保住「搜索」二字这个可读入口 */
+  .nav__search-kbd {
+    display: none;
+  }
 }
 
 @container stage (max-width: 720px) {
@@ -574,6 +626,19 @@ onScopeDispose(() => {
 
   .nav__setting {
     height: 34px;
+  }
+
+  /* 窄屏胶囊退化成与圆钮同尺寸的纯图标按钮，入口位置不变 */
+  .nav__search {
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: 50%;
+  }
+
+  .nav__search-label {
+    display: none;
   }
 
   .nav__round {
