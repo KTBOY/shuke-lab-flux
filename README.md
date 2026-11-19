@@ -2,9 +2,54 @@
 
 让固定容器里的颜色材质"活"起来 🎨
 
+**FLUX is a WebGL fluid color lab that themes a complete, hand-rolled Vue 3 admin console — with a permission star map, ⌘K permission Q&A, dark mode, and CRUD.**
+
+**FLUX 是一个 WebGL 流体颜色实验室，也是一套完整的 Vue 3 后台控制台：选一套流动配色，就能给整套后台换肤。**
+
+[![GitHub stars](https://img.shields.io/github/stars/KTBOY/shuke-lab-flux?style=flat-square)](https://github.com/KTBOY/shuke-lab-flux/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/KTBOY/shuke-lab-flux?style=flat-square)](https://github.com/KTBOY/shuke-lab-flux/forks)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-ktboy.github.io%2Fshuke--lab--flux-2ea44f?style=flat-square)](https://ktboy.github.io/shuke-lab-flux/)
+[![Vue 3](https://img.shields.io/badge/Vue-3-42b883?style=flat-square&logo=vue.js&logoColor=white)](https://vuejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8-646cff?style=flat-square&logo=vite&logoColor=white)](https://vite.dev/)
+
 **在线预览:<https://ktboy.github.io/shuke-lab-flux/>**
 
-一个仓库、两条线:**FLUX 流体颜色生成器**(Vue 版 + 零依赖单文件旧版)与 **Crestio 内容仪表盘工作台**(Vue 3 + TypeScript + Vite,不接 UI 组件库全部手写;唯一的第三方运行时库是渲染工时柱状图的 `sk-chart-duo`)。三者打包成同一个静态站点,共用一层导航外壳,**颜色实验室是站点首页**,仪表盘在 `/#/dashboard`,实验室页有一条入口过去。
+一个仓库、两条线:**FLUX 流体颜色生成器**(Vue 版 + 零依赖单文件旧版)与 **Crestio 内容仪表盘工作台**(Vue 3 + TypeScript + Vite,不接 UI 组件库全部手写;唯一的第三方运行时库是渲染工时柱状图的 `sk-chart-duo`)。三者打包成同一个静态站点,共用一层导航外壳,**颜色实验室是站点首页**,仪表盘在 `/#/dashboard`,实验室页有一条入口过去。如今,实验室的配色已经能直接驱动仪表盘主题,工作台也补齐了权限、用户、搜索、登录与深色模式。
+
+## 功能全景 / Features
+
+管理区页面会先经过**演示模式登录**(可选演示身份后输入任意非空密码,也可一键体验;它用于展示登录与守卫流程,不是生产级鉴权)。点击下面的在线体验链接,登录后会按原目标页回跳。
+
+| 功能 | 一句话卖点 | 在线体验 |
+| --- | --- | --- |
+| **FLUX 流体颜色实验室 / Fluid Color Lab** | 6 套主题在 WebGL 玻璃胶囊里持续流动,悬停与搅动都会改变烟雾速度。 | [打开实验室](https://ktboy.github.io/shuke-lab-flux/#/) |
+| **仪表盘动效 / Animated Dashboard** | 卡片以弹簧曲线错峰弹射归位,KPI 数字滚动抵达目标值,不是静态截图式后台。 | [打开仪表盘](https://ktboy.github.io/shuke-lab-flux/#/dashboard) |
+| **权限星图 / Permission Star Map** | 把用户、角色、菜单画成带刻度的星图:点角色看分支生长,点用户看光点沿权限链追溯。 | [打开权限星图](https://ktboy.github.io/shuke-lab-flux/#/permissions) |
+| **配色一键换肤与导出 / One-click Theme & Export** | 在实验室点「应用到仪表盘」,仪表盘强调色与图表立即跟随 FLUX 配色并持久保存,还能导出 CSS / JSON。 | [从实验室开始](https://ktboy.github.io/shuke-lab-flux/#/) |
+| **深色模式 / Dark Mode** | 中性设计令牌整套切换为暖灰暗色阶梯,与实验室应用主题互不冲突,选择会保留。 | [进入仪表盘切换](https://ktboy.github.io/shuke-lab-flux/#/dashboard) |
+| **⌘K 命令面板与权限问答 / Command Palette & Permission Q&A** | 不只搜页面和动作,还能问「谁能导出数据?」,直接返回用户 → 角色 → 菜单链路。 | [打开后按 ⌘K](https://ktboy.github.io/shuke-lab-flux/#/permissions) |
+| **用户管理 CRUD / User Management** | 13 位演示用户支持搜索、排序、分页、新增、编辑、启停、删除确认与空状态。 | [打开用户管理](https://ktboy.github.io/shuke-lab-flux/#/users) |
+| **演示登录与路由守卫 / Demo Auth & Route Guard** | 登录按钮会收成圆并画出对勾;未登录访问管理区会被送到登录页,登录后回到原目标。 | [打开登录页](https://ktboy.github.io/shuke-lab-flux/#/login) |
+| **404 页面 / Not Found** | 错误路径不再白屏,页面保留一颗 FLUX 胶囊,并提供回实验室与去仪表盘两个入口。 | [试一个不存在的路径](https://ktboy.github.io/shuke-lab-flux/#/lost-page) |
+
+### 界面速览
+
+**权限星图:让 RBAC 关系自己长出来**
+
+![权限星图](assets/shot-permission-star-map.png)
+
+**⌘K 权限问答:答案带着完整授权链一起回来**
+
+![⌘K 权限问答](assets/shot-command-palette-qa.png)
+
+**用户管理:标准表格能力一项不少**
+
+![用户管理](assets/shot-user-management.png)
+
+**深色模式:整套仪表盘切入暖灰暗色**
+
+![深色模式仪表盘](assets/shot-dashboard-dark.png)
 
 ## 站点构成
 
