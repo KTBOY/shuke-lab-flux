@@ -28,6 +28,9 @@ export type IconName =
   | 'code-branch'
   | 'external-link'
   | 'network'
+  | 'download'
+  | 'sun'
+  | 'moon'
 
 /** 图标图元：path 用 d 描述，dot 用圆心半径描述 */
 export interface IconShape {
@@ -133,4 +136,15 @@ export const ICON_SHAPES: Record<IconName, IconShape[]> = {
     { cx: 12, cy: 6.2, r: 2.5 },
     { cx: 17.8, cy: 14.5, r: 2.5 },
   ],
+  /* 导出下载：竖箭头落向一条底线，实验室导出 CSS / JSON 共用 */
+  download: [{ d: 'M12 4v11.2' }, { d: 'M6.6 10.4L12 15.8L17.4 10.4' }, { d: 'M5 19.5h14' }],
+  /* 太阳：圆盘加八道短芒，深浅模式切换按钮在深色态显示（点了回浅色） */
+  sun: [
+    { cx: 12, cy: 12, r: 4 },
+    {
+      d: 'M12 2.8v2M12 19.2v2M2.8 12h2M19.2 12h2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19',
+    },
+  ],
+  /* 月亮：一道大弧收出月牙，深浅模式切换按钮在浅色态显示（点了去深色） */
+  moon: [{ d: 'M20.2 14.8A8.4 8.4 0 1 1 9.2 3.8a6.8 6.8 0 0 0 11 11Z' }],
 }

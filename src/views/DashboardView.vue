@@ -61,6 +61,9 @@ defineOptions({ name: 'Dashboard-View' })
 .dashboard {
   /* 外壳由 AppShell 提供，这里只作为内容层的根，供入场错峰选择器挂载 */
   min-width: 0;
+  /* 卡片弹射入场的缓动与时长收口在根上，错峰延迟由各卡的 --d 单独给 */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-pop: 0.55s;
 }
 
 .hero {
@@ -208,42 +211,72 @@ defineOptions({ name: 'Dashboard-View' })
   }
 }
 
-/* 首屏错峰上浮，让各模块依次入场；外壳三件套的节奏由 AppShell 负责 */
-.dashboard > *,
-.board > *,
-.board__stack > * {
-  animation: rise-in 0.5s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
-}
-
+/*
+ * 首屏入场：标题行沿用上浮，指标区与栅格里的每张卡片带弹簧逐个弹射归位；
+ * 栅格的列只是排版容器、不再整列动，免得列与卡两层动画叠出双倍位移。
+ * 外壳三件套的节奏由 AppShell 负责。
+ */
 .dashboard > :nth-child(1) {
+  animation: rise-in 0.5s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
   animation-delay: 0.08s;
 }
 
 .dashboard > :nth-child(2) {
+  animation: card-pop var(--dur-pop) var(--ease-spring) backwards;
   animation-delay: 0.14s;
 }
 
-.dashboard > :nth-child(3) {
-  animation-delay: 0.2s;
+.board__col > *:not(.board__pair),
+.board__stack > *,
+.board__pair > *,
+.board__progress {
+  animation: card-pop var(--dur-pop) var(--ease-spring) backwards;
+  animation-delay: var(--d, 0.24s);
 }
 
-.board > :nth-child(1) {
-  animation-delay: 0.24s;
+/* 错峰顺序按阅读流：左栏 → 中栏 → 右栏 → 整行工时图，每步约 90ms */
+.board__col--left > :nth-child(1) {
+  --d: 0.22s;
 }
 
-.board > :nth-child(2) {
-  animation-delay: 0.28s;
+.board__col--left > :nth-child(2) {
+  --d: 0.31s;
 }
 
-.board > :nth-child(3) {
-  animation-delay: 0.32s;
-}
-
-.board > :nth-child(4) {
-  animation-delay: 0.36s;
+.board__stack > :nth-child(1) {
+  --d: 0.27s;
 }
 
 .board__stack > :nth-child(2) {
-  animation-delay: 0.4s;
+  --d: 0.36s;
+}
+
+.board__pair > :nth-child(1) {
+  --d: 0.31s;
+}
+
+.board__pair > :nth-child(2) {
+  --d: 0.4s;
+}
+
+.board__col--right > :nth-child(2) {
+  --d: 0.45s;
+}
+
+.board__progress {
+  --d: 0.5s;
+}
+
+/* 弹射：从下方 14px、缩到 97% 处出发，靠过冲曲线越过原位再回落定住 */
+@keyframes card-pop {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 </style>

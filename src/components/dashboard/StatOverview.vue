@@ -6,23 +6,23 @@
   <section class="stats">
     <ul class="stats__bars">
       <li
-        v-for="(bar, index) in STAT_BARS"
+        v-for="(bar, index) in bars"
         :key="bar.label"
         class="stats__slot"
         :style="{ flexGrow: bar.value, '--i': index }"
       >
         <span class="stats__label">{{ bar.label }}</span>
         <span class="bar" :class="`bar--${bar.variant}`">
-          <span class="bar__value">{{ bar.value }}%</span>
+          <span class="bar__value">{{ bar.display }}%</span>
         </span>
       </li>
     </ul>
 
     <ul class="stats__kpi">
-      <li v-for="kpi in KPI_STATS" :key="kpi.label" class="kpi">
+      <li v-for="kpi in kpis" :key="kpi.label" class="kpi">
         <div class="kpi__row">
           <AppIcon class="kpi__icon" :name="kpi.icon" :size="18" />
-          <strong class="kpi__value tnum">{{ kpi.value }}</strong>
+          <strong class="kpi__value tnum" aria-live="polite">{{ kpi.display }}</strong>
         </div>
         <span class="kpi__label">{{ kpi.label }}</span>
 
@@ -50,10 +50,24 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
+import { useCountUp } from '@/composables/useCountUp'
 import { KPI_DELTA_LABEL, KPI_STATS, STAT_BARS } from '@/data/dashboard'
 
 defineOptions({ name: 'Dashboard-StatOverview' })
+
+/* 主数字挂载时从 0 滚到目标值；布局宽度仍按终值走（flexGrow / 胶囊尺寸不随滚动变） */
+const barCountUps = STAT_BARS.map((bar) => useCountUp(bar.value))
+const kpiCountUps = KPI_STATS.map((kpi) => useCountUp(kpi.value))
+
+/** 把当前帧的格式化文案并回数据行，模板只读字段、不感知滚动细节 */
+const bars = computed(() =>
+  STAT_BARS.map((bar, index) => ({ ...bar, display: barCountUps[index]?.text.value ?? '' })),
+)
+const kpis = computed(() =>
+  KPI_STATS.map((kpi, index) => ({ ...kpi, display: kpiCountUps[index]?.text.value ?? '' })),
+)
 
 /** 点阵的行数：列高按它取整，七列四行足够看出形状又不抢主数值 */
 const TREND_ROWS = 4

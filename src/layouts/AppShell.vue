@@ -52,6 +52,8 @@ defineOptions({ name: 'App-Shell' })
   grid-template-columns: minmax(0, 1fr);
   min-height: 100vh;
   background: var(--c-canvas);
+  /* 深浅切换时画布底色平滑过渡，与 base.css 的主要面过渡同拍 */
+  transition: background-color 0.25s ease;
   container-type: inline-size;
   container-name: stage;
 }
@@ -64,6 +66,7 @@ defineOptions({ name: 'App-Shell' })
   min-width: 0;
   padding: clamp(8px, 1.4cqi, 14px);
   background: var(--c-canvas);
+  transition: background-color 0.25s ease;
 }
 
 .shell__body {

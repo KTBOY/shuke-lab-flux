@@ -60,6 +60,20 @@ img {
   box-shadow: var(--sd-panel);
 }
 
+/*
+ * 深浅切换过渡：主要面（页面底、面板）的底色/边色/阴影以 0.25s 平滑换值，
+ * 切 data-theme 时全站不是硬闪一帧。只挂颜色类属性，不碰 transform/opacity，
+ * 与各组件自己的入场动画互不干扰；prefers-reduced-motion 走文件末尾的全局降级。
+ * 导航与外壳的面在各自组件里同拍补了 background-color 过渡。
+ */
+body,
+.panel {
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
 .panel__head {
   display: flex;
   align-items: center;
@@ -97,7 +111,11 @@ img {
   background: var(--c-surface);
   color: var(--c-ink);
   box-shadow: var(--sd-float);
-  transition: transform 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .icon-round:hover {

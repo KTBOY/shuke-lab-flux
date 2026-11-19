@@ -789,6 +789,17 @@ function onChipClick(chip: DetailChip): void {
   align-items: start;
 }
 
+/*
+ * 深色下唯一要改的本地变量：--star-accent-soft 在浅色里是近白浅绿，作头像/徽标/已追溯叶面的底、
+ * 上面压的是 --c-ink-2 文字——深色里 ink-2 翻成浅色，浅底浅字直接瞎。
+ * 这里只把它换成深绿底（同色相、明度落到面板一档），文字与描边口径不变；
+ * --star-accent（中绿描边）与 --star-glow（光点亮绿）两种模式下都成立，不动。
+ * 选择器多叠一层类名抬特异性，压过组件根的本地声明，与出现顺序无关。
+ */
+:global([data-theme='dark'] .star-map.star-map) {
+  --star-accent-soft: #31491f;
+}
+
 /* —— 左轨：用户列表 —— */
 .star-map__rail {
   display: flex;
