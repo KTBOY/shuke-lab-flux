@@ -7,6 +7,7 @@ import '@fontsource-variable/inter'
 import '@/styles/tokens.css'
 import '@/styles/base.css'
 import App from '@/App.vue'
+import { useAuth } from '@/composables/useAuth'
 import { useColorMode } from '@/composables/useColorMode'
 import { useDashboardTheme } from '@/composables/useDashboardTheme'
 import { router } from '@/router'
@@ -15,5 +16,7 @@ import { router } from '@/router'
 useDashboardTheme().restoreTheme()
 /* 深浅模式同理：data-theme 属性赶在首帧之前落位，深色用户刷新不会先闪一帧白 */
 useColorMode().restoreColorMode()
+/* 登录态同理：守卫在首次导航就会读它，必须赶在路由装上之前恢复，否则刷新管理区会被误送去登录页 */
+useAuth().restore()
 
 createApp(App).use(router).mount('#app')
