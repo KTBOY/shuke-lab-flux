@@ -9,7 +9,7 @@
     <div class="nav__menu-wrap" :data-at-start="atStart" :data-at-end="atEnd">
       <ul ref="menuRef" class="nav__menu" @scroll.passive="syncEdges">
         <li v-for="item in NAV_ITEMS" :key="item">
-          <!-- 唯一真跳转的一项：链接才有中键/新窗口能力，高亮由当前路由决定 -->
+          <!-- 真跳转的项渲染成链接（才有中键/新窗口能力），高亮由当前路由决定 -->
           <RouterLink
             v-if="item === COLOR_LAB_NAV_LABEL"
             class="nav__item"
@@ -17,6 +17,17 @@
             :aria-current="item === activeLabel ? 'page' : undefined"
             :data-label="item"
             :to="{ name: ROUTE_NAME.colorLab }"
+          >
+            {{ item }}
+          </RouterLink>
+
+          <RouterLink
+            v-else-if="item === PERMISSIONS_NAV_LABEL"
+            class="nav__item"
+            :class="{ 'is-active': item === activeLabel }"
+            :aria-current="item === activeLabel ? 'page' : undefined"
+            :data-label="item"
+            :to="{ name: ROUTE_NAME.permissions }"
           >
             {{ item }}
           </RouterLink>
@@ -106,6 +117,7 @@ import {
   BRAND,
   COLOR_LAB_NAV_LABEL,
   NAV_ITEMS,
+  PERMISSIONS_NAV_LABEL,
   SETTING_LABEL,
 } from '@/data/dashboard'
 import { ROUTE_NAME } from '@/router'
@@ -119,12 +131,14 @@ const activeNav = ref<string>(ACTIVE_NAV)
 const linksOpen = ref(false)
 const linksWrap = ref<HTMLElement | null>(null)
 
-/** 实验室两项（Vue 版与旧版单文件）共用一个入口，高亮跟着路由走；其余是模板里的占位菜单 */
-const activeLabel = computed(() =>
-  route.name === ROUTE_NAME.colorLab || route.name === ROUTE_NAME.colorLabLegacy
-    ? COLOR_LAB_NAV_LABEL
-    : activeNav.value,
-)
+/** 实验室两项（Vue 版与旧版单文件）共用一个入口、星图自成一项，高亮跟着路由走；其余是模板里的占位菜单 */
+const activeLabel = computed(() => {
+  if (route.name === ROUTE_NAME.colorLab || route.name === ROUTE_NAME.colorLabLegacy) {
+    return COLOR_LAB_NAV_LABEL
+  }
+  if (route.name === ROUTE_NAME.permissions) return PERMISSIONS_NAV_LABEL
+  return activeNav.value
+})
 
 const menuRef = ref<HTMLElement | null>(null)
 const thumbStyle = ref<CSSProperties>({})

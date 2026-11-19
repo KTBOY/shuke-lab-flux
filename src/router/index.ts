@@ -1,6 +1,6 @@
 /**
  * @Author: zlc
- * @Description: 路由表 —— 外壳常驻，三个页面（FLUX Vue 版 / 仪表盘 / FLUX 旧版单文件）挂在其下
+ * @Description: 路由表 —— 外壳常驻，四个页面（FLUX Vue 版 / 仪表盘 / 权限星图 / FLUX 旧版单文件）挂在其下
  */
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
@@ -10,6 +10,7 @@ import FluxStudioView from '@/views/FluxStudioView.vue'
 /** 路由名收口在此，组件只引用常量，不散写字面量路径 */
 export const ROUTE_NAME = {
   dashboard: 'dashboard',
+  permissions: 'permissions',
   colorLab: 'color-lab',
   colorLabLegacy: 'color-lab-legacy',
 } as const
@@ -35,6 +36,12 @@ const routes: RouteRecordRaw[] = [
         name: ROUTE_NAME.dashboard,
         // 仪表盘与它的九块卡片只在点进去时才要下载
         component: () => import('@/views/DashboardView.vue'),
+      },
+      {
+        path: 'permissions',
+        name: ROUTE_NAME.permissions,
+        // 星图组件只在点进去时才要下载，与仪表盘同一懒加载口径
+        component: () => import('@/views/PermissionMapView.vue'),
       },
       {
         path: 'color-lab/legacy',
