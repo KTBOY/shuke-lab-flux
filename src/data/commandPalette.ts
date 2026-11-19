@@ -55,6 +55,7 @@ export interface CommandGroup {
 export const COMMAND_ACTION = {
   toggleColorMode: 'toggle-color-mode',
   restoreDefaultTheme: 'restore-default-theme',
+  logout: 'logout',
   applyThemePrefix: 'apply-theme:',
 } as const
 
@@ -156,6 +157,15 @@ const ACTION_ITEMS: CommandItem[] = [
     icon: 'history',
     keywords: '恢复 默认 主题 黄色 重置 reset default theme',
     actionId: COMMAND_ACTION.restoreDefaultTheme,
+  },
+  {
+    id: `action:${COMMAND_ACTION.logout}`,
+    kind: 'action',
+    label: '退出登录',
+    hint: '退出当前演示身份，回到登录页',
+    icon: 'logout',
+    keywords: '退出 登录 注销 登出 切换账号 logout sign out exit account',
+    actionId: COMMAND_ACTION.logout,
   },
   /* 每套 FLUX 主题一条「应用主题」动作：在面板里直接换肤，不必先去实验室 */
   ...FLUX_THEMES.map<CommandItem>((theme) => ({

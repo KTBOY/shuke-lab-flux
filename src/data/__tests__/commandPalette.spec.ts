@@ -45,6 +45,11 @@ describe('searchCommands', () => {
     expect(applied.some((item) => item.actionId === 'apply-theme:aurora')).toBe(true)
   })
 
+  it('搜「退出」命中退出登录动作', () => {
+    const items = flattenGroups(searchCommands('退出'))
+    expect(items.some((item) => item.actionId === 'logout')).toBe(true)
+  })
+
   it('无意义查询返回空分组（组件据此出空状态与问答入口）', () => {
     expect(searchCommands('zzz不存在的东西')).toEqual([])
   })

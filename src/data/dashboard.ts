@@ -511,3 +511,69 @@ export const FLUX_LEGACY_UI: FluxLegacyUi = {
   toStudio: '返回 Vue 版',
   openExternal: '新窗口打开',
 }
+
+export interface LoginUi {
+  /** 左侧深色面板的一句口号，压在 FLUX 胶囊下方 */
+  slogan: string
+  /** 口号下面的弱说明：点明管理区与实验室的公开口径 */
+  visualNote: string
+  /** 表单标题 */
+  title: string
+  /** 表单副标题：说明登录只针对管理区 */
+  subtitle: string
+  /** 演示模式明示横幅：不装真鉴权，任意非空密码即可 */
+  demoHint: string
+  /** 身份选择字段名 */
+  userLabel: string
+  /** 身份未选时的占位项 */
+  userPlaceholder: string
+  /** 身份字段下面展示所选用户角色时的前缀 */
+  rolesLabel: string
+  /** 密码字段名 */
+  passwordLabel: string
+  /** 密码输入占位 */
+  passwordPlaceholder: string
+  /** 校验：未选身份 */
+  userRequired: string
+  /** 校验：密码为空 */
+  passwordRequired: string
+  /** 登录按钮默认文案 */
+  submit: string
+  /** 减动效降级时按钮上的进行中文案 */
+  submitting: string
+  /** 一键体验按钮文案（以默认演示用户直接进入） */
+  quickEntry: string
+  /** 一键体验的弱说明 */
+  quickEntryHint: string
+  /** 登录页回公开实验室的链接文案 */
+  toColorLab: string
+  /** 顶栏未登录时登录入口的文案 */
+  navLogin: string
+  /** 顶栏账号菜单的可访问名与标题 */
+  accountMenuLabel: string
+  /** 顶栏账号菜单里的退出动作 */
+  logout: string
+}
+
+export const LOGIN_UI: LoginUi = {
+  slogan: '让固定容器里的颜色与材质活起来',
+  visualNote: '颜色实验室始终公开；仪表盘、用户管理与权限星图在登录之后',
+  title: '登录工作台',
+  subtitle: '选一个演示身份进入管理区，实验室不登录也能逛',
+  demoHint: '演示模式：任意非空密码即可登录，不校验真实凭据',
+  userLabel: '登录身份',
+  userPlaceholder: '请选择一位演示用户',
+  rolesLabel: '持有角色',
+  passwordLabel: '密码',
+  passwordPlaceholder: '任意非空密码',
+  userRequired: '先选一个登录身份',
+  passwordRequired: '密码不能为空（演示模式下任意填写即可）',
+  submit: '登录',
+  submitting: '登录中…',
+  quickEntry: '一键体验',
+  quickEntryHint: '以周明远（超级管理员）直接进入，不用填密码',
+  toColorLab: '先逛逛颜色实验室',
+  navLogin: '登录',
+  accountMenuLabel: '账号',
+  logout: '退出登录',
+}

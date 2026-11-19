@@ -147,6 +147,7 @@
 import { computed, nextTick, onScopeDispose, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import AppIcon from '@/components/ui/AppIcon.vue'
+import { useAuth } from '@/composables/useAuth'
 import { useColorMode } from '@/composables/useColorMode'
 import { useCommandPalette } from '@/composables/useCommandPalette'
 import { useDashboardTheme } from '@/composables/useDashboardTheme'
@@ -171,6 +172,7 @@ const router = useRouter()
 const { isPaletteOpen, closePalette, togglePalette } = useCommandPalette()
 const { toggleColorMode } = useColorMode()
 const { applyTheme, clearTheme } = useDashboardTheme()
+const { logout } = useAuth()
 
 const query = ref('')
 const activeIndex = ref(0)
@@ -258,7 +260,13 @@ function runItem(item: CommandItem): void {
   if (item.kind === 'action' && item.actionId) {
     if (item.actionId === COMMAND_ACTION.toggleColorMode) toggleColorMode()
     else if (item.actionId === COMMAND_ACTION.restoreDefaultTheme) clearTheme()
-    else if (item.actionId.startsWith(COMMAND_ACTION.applyThemePrefix)) {
+    else if (item.actionId === COMMAND_ACTION.logout) {
+      /* 退出是换页动作：先关面板，再清登录态并回登录页（守卫对登录页本身放行，不会打转） */
+      closePalette()
+      logout()
+      void router.push({ name: ROUTE_NAME.login })
+      return
+    } else if (item.actionId.startsWith(COMMAND_ACTION.applyThemePrefix)) {
       applyTheme(item.actionId.slice(COMMAND_ACTION.applyThemePrefix.length))
     }
     closePalette()

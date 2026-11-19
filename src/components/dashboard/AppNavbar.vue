@@ -130,9 +130,42 @@
       <button type="button" class="nav__round" aria-label="通知">
         <AppIcon name="bell" :size="16" />
       </button>
-      <button type="button" class="nav__round" aria-label="个人中心">
-        <AppIcon name="user" :size="16" />
-      </button>
+
+      <!-- 用户区：已登录是头像+姓名的账号菜单（内含退出），未登录退化为去登录页的入口（实验室公开，顶栏在未登录时也会出现） -->
+      <div ref="userWrap" class="nav__user">
+        <template v-if="currentUser">
+          <button
+            type="button"
+            class="nav__user-btn"
+            :aria-expanded="userOpen"
+            aria-haspopup="true"
+            aria-controls="nav-user-panel"
+            @click="userOpen = !userOpen"
+          >
+            <span class="nav__avatar" aria-hidden="true">{{ currentUser.name.slice(0, 1) }}</span>
+            <span class="nav__user-name">{{ currentUser.name }}</span>
+            <AppIcon name="chevron-down" :size="12" class="nav__user-caret" />
+          </button>
+
+          <Transition name="panel">
+            <div v-if="userOpen" id="nav-user-panel" class="links nav__user-panel">
+              <p class="links__title">{{ LOGIN_UI.accountMenuLabel }}</p>
+              <p class="nav__user-meta">
+                <strong class="nav__user-meta-name">{{ currentUser.name }}</strong>
+                <span class="nav__user-meta-title">{{ currentUser.title }}</span>
+              </p>
+              <button type="button" class="links__item nav__logout" @click="onLogout">
+                <AppIcon name="logout" :size="15" class="links__icon" />
+                <span class="links__label">{{ LOGIN_UI.logout }}</span>
+              </button>
+            </div>
+          </Transition>
+        </template>
+
+        <RouterLink v-else class="nav__login" :to="{ name: ROUTE_NAME.login }">
+          {{ LOGIN_UI.navLogin }}
+        </RouterLink>
+      </div>
     </div>
   </nav>
 </template>
@@ -142,6 +175,7 @@ import { computed, nextTick, onMounted, onScopeDispose, ref, watch } from 'vue'
 import type { CSSProperties } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AppIcon from '@/components/ui/AppIcon.vue'
+import { useAuth } from '@/composables/useAuth'
 import { useColorMode } from '@/composables/useColorMode'
 import { useCommandPalette } from '@/composables/useCommandPalette'
 import { COMMAND_PALETTE_UI } from '@/data/commandPalette'
@@ -150,6 +184,7 @@ import {
   AUTHOR,
   BRAND,
   COLOR_LAB_NAV_LABEL,
+  LOGIN_UI,
   NAV_ITEMS,
   PERMISSIONS_NAV_LABEL,
   SETTING_LABEL,
@@ -164,6 +199,17 @@ const router = useRouter()
 
 /** 深浅模式与桥接主题正交：这里只管 data-theme，accent 仍归实验室主题 */
 const { isDark, toggleColorMode } = useColorMode()
+
+/** 登录态是模块级单例：用户区只读 currentUser 渲染，退出走 logout 后回登录页 */
+const { currentUser, logout } = useAuth()
+const userOpen = ref(false)
+const userWrap = ref<HTMLElement | null>(null)
+
+function onLogout(): void {
+  userOpen.value = false
+  logout()
+  void router.push({ name: ROUTE_NAME.login })
+}
 
 /** 命令面板开关是模块级单例：胶囊只负责唤出，面板本体挂在 AppShell */
 const { openPalette } = useCommandPalette()
@@ -274,13 +320,17 @@ onScopeDispose(() => {
   resizeObserver = null
 })
 
-/** 下拉外点击或按 Esc 关闭；监听器随组件作用域销毁一起摘掉 */
+/** 下拉外点击或按 Esc 关闭（设置与账号两个下拉共用）；监听器随组件作用域销毁一起摘掉 */
 function onPointerDown(event: PointerEvent): void {
   if (!linksWrap.value?.contains(event.target as Node)) linksOpen.value = false
+  if (!userWrap.value?.contains(event.target as Node)) userOpen.value = false
 }
 
 function onKeyDown(event: KeyboardEvent): void {
-  if (event.key === 'Escape') linksOpen.value = false
+  if (event.key === 'Escape') {
+    linksOpen.value = false
+    userOpen.value = false
+  }
 }
 
 document.addEventListener('pointerdown', onPointerDown)
@@ -520,6 +570,88 @@ onScopeDispose(() => {
   transform: translateY(-1px);
 }
 
+/* —— 用户区：账号菜单与未登录入口 —— */
+.nav__user {
+  position: relative;
+}
+
+.nav__user-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 12px 0 6px;
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  font-size: var(--fs-mini);
+  white-space: nowrap;
+  transition:
+    color 0.16s ease,
+    background-color 0.25s ease;
+}
+
+.nav__user-btn:hover {
+  color: var(--c-ink-2);
+}
+
+/* 头像用深墨圆 + 浅字：与菜单深墨胶囊同语言，两种模式下都不变 */
+.nav__avatar {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--c-dark);
+  color: var(--c-on-dark);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.nav__user-caret {
+  color: var(--c-ink-4);
+}
+
+.nav__user-panel {
+  width: 200px;
+}
+
+.nav__user-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 2px 8px 8px;
+}
+
+.nav__user-meta-name {
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.nav__user-meta-title {
+  font-size: 9.5px;
+  color: var(--c-ink-3);
+}
+
+/* 退出行复用 links__item 的排版，只补按钮形态需要的整宽与左对齐 */
+.nav__logout {
+  width: 100%;
+  text-align: left;
+}
+
+.nav__login {
+  display: grid;
+  place-items: center;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  color: inherit;
+  font-size: var(--fs-mini);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.25s ease;
+}
+
 /* —— 设置下拉：个人链接 —— */
 .links {
   position: absolute;
@@ -603,6 +735,16 @@ onScopeDispose(() => {
   .nav__search-kbd {
     display: none;
   }
+
+  /* 中档收姓名与箭头，只留头像圆，账号菜单照样可达 */
+  .nav__user-name,
+  .nav__user-caret {
+    display: none;
+  }
+
+  .nav__user-btn {
+    padding: 0 6px;
+  }
 }
 
 @container stage (max-width: 720px) {
@@ -657,6 +799,16 @@ onScopeDispose(() => {
   .nav__round {
     width: 34px;
     height: 34px;
+  }
+
+  .nav__user-btn,
+  .nav__login {
+    height: 34px;
+  }
+
+  .nav__avatar {
+    width: 24px;
+    height: 24px;
   }
 }
 </style>
