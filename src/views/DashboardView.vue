@@ -1,11 +1,14 @@
 <!--
  * @Author: zlc
- * @Description: 仪表盘视图 —— 标题行（欢迎语 + 颜色实验室入口）、指标区、三栏卡片栅格与整行工时图（容器查询三档降级）
+ * @Description: 仪表盘视图 —— 标题行（本周基线 + 问候副行与颜色实验室入口）、指标区、三栏卡片栅格与整行工时图（容器查询三档降级）
 -->
 <template>
   <div class="dashboard">
     <div class="hero">
-      <h1 class="hero__title">{{ WELCOME_TITLE }}</h1>
+      <div class="hero__text">
+        <h1 class="hero__title">{{ DASHBOARD_WEEK_LABEL }}</h1>
+        <p class="hero__sub">{{ WELCOME_TITLE }}</p>
+      </div>
 
       <RouterLink class="hero__entry" :to="{ name: ROUTE_NAME.colorLab }">
         <AppIcon :name="COLOR_LAB_ENTRY.icon" :size="15" class="hero__entry-icon" />
@@ -51,7 +54,7 @@ import StatOverview from '@/components/dashboard/StatOverview.vue'
 import TimeTrackerCard from '@/components/dashboard/TimeTrackerCard.vue'
 import WorkProgressCard from '@/components/dashboard/WorkProgressCard.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
-import { COLOR_LAB_ENTRY, WELCOME_TITLE } from '@/data/dashboard'
+import { COLOR_LAB_ENTRY, DASHBOARD_WEEK_LABEL, WELCOME_TITLE } from '@/data/dashboard'
 import { ROUTE_NAME } from '@/router'
 
 defineOptions({ name: 'Dashboard-View' })
@@ -76,12 +79,26 @@ defineOptions({ name: 'Dashboard-View' })
   margin: clamp(14px, 2.6cqi, 24px) 0 clamp(12px, 2.2cqi, 20px);
 }
 
+.hero__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* 标题行先给坐标系（本周是哪一周），问候降为副行小字 */
 .hero__title {
   min-width: 0;
-  font-size: clamp(26px, 5cqi, var(--fs-display));
+  font-size: clamp(22px, 3.6cqi, 30px);
   font-weight: 300;
   letter-spacing: -0.025em;
   line-height: 1.1;
+}
+
+.hero__sub {
+  margin: 0;
+  font-size: var(--fs-body);
+  color: var(--c-ink-3);
 }
 
 .hero__entry {
