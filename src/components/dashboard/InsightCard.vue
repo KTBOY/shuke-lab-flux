@@ -59,8 +59,8 @@ const facts = computed(() =>
   overflow: hidden;
   flex-direction: column;
   gap: 8px;
-  min-height: 200px;
-  padding: 14px;
+  min-height: 164px;
+  padding: 12px;
   color: var(--c-on-dark);
   /* 深墨展示带：与入职任务卡同一档暗面，强调色只落在大数字上 */
   background: var(--c-dark);

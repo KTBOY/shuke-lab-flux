@@ -56,7 +56,7 @@ const footerText = computed(() => ONBOARDING_CARD.footer.replace('{rest}', Strin
 .onboard {
   display: flex;
   flex-direction: column;
-  padding: 14px;
+  padding: 12px;
 }
 
 .onboard__head {
@@ -140,8 +140,8 @@ const footerText = computed(() => ONBOARDING_CARD.footer.replace('{rest}', Strin
 }
 
 .onboard__foot {
-  margin-top: 12px;
-  padding-top: 10px;
+  margin-top: 10px;
+  padding-top: 8px;
   border-top: 1px solid var(--c-line);
   font-size: var(--fs-mini);
   color: var(--c-ink-3);

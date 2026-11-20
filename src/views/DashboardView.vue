@@ -80,7 +80,7 @@ defineOptions({ name: 'Dashboard-View' })
   flex-wrap: wrap;
   /* 换行由 wrap 兜底，因此不需要额外断点，尺寸全部走 clamp 流式 */
   gap: clamp(10px, 2cqi, 18px);
-  margin: clamp(14px, 2.6cqi, 24px) 0 clamp(12px, 2.2cqi, 20px);
+  margin: clamp(12px, 2.2cqi, 18px) 0 clamp(8px, 1.6cqi, 12px);
 }
 
 .hero__text {
@@ -164,16 +164,16 @@ defineOptions({ name: 'Dashboard-View' })
   grid-template-areas:
     'left stack right'
     'progress progress progress';
-  gap: 12px;
+  gap: 10px;
   align-items: start;
-  margin-top: clamp(14px, 2.4cqi, 22px);
+  margin-top: clamp(10px, 1.8cqi, 14px);
 }
 
 .board__col,
 .board__stack {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
 }
 
@@ -204,11 +204,11 @@ defineOptions({ name: 'Dashboard-View' })
   min-height: 0;
 }
 
-/* 入职进度与洞察卡并排：两卡同高，洞察卡靠内容把行高顶到 200 以上 */
+/* 入职进度与洞察卡并排：两卡同高，行高由洞察卡的 min-height 顶住 */
 .board__pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
   align-items: stretch;
 }
 
