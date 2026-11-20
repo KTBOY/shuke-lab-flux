@@ -83,7 +83,7 @@ function isOpen(key: string): boolean {
   --dur-close: 0.24s;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .group {
@@ -103,7 +103,7 @@ function isOpen(key: string): boolean {
   justify-content: space-between;
   gap: 8px;
   width: 100%;
-  padding: 11px 14px;
+  padding: 9px 14px;
   font-size: 12.5px;
   text-align: left;
 }
@@ -133,7 +133,7 @@ function isOpen(key: string): boolean {
 
 /* padding 放在内容层，行轨归零时才不会被内边距顶出 12px 的残留高度 */
 .group__inner {
-  padding: 0 12px 12px;
+  padding: 0 12px 10px;
   transition:
     opacity 0.2s var(--ease),
     transform var(--dur-open) var(--ease);
@@ -169,8 +169,8 @@ function isOpen(key: string): boolean {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px;
-  margin-bottom: 8px;
+  padding: 6px;
+  margin-bottom: 6px;
   border: 1px solid var(--c-hairline);
   border-radius: 12px;
   background: var(--c-surface);
@@ -178,7 +178,7 @@ function isOpen(key: string): boolean {
 
 .device__img {
   width: 40px;
-  height: 30px;
+  height: 28px;
   border-radius: 6px;
   object-fit: cover;
 }

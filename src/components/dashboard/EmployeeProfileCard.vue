@@ -24,7 +24,7 @@ defineOptions({ name: 'Dashboard-EmployeeProfileCard' })
 .profile {
   position: relative;
   overflow: hidden;
-  height: 200px;
+  height: 164px;
   border-radius: var(--r-panel);
   background: var(--c-ink-4);
   box-shadow: var(--sd-panel);
@@ -34,12 +34,13 @@ defineOptions({ name: 'Dashboard-EmployeeProfileCard' })
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 22%;
+  /* 卡高收紧后纵向溢出变大，同样的 22% 会把窗口压得更低、裁掉发顶，焦点上移到 15% 补偿 */
+  object-position: center 15%;
 }
 
 /*
- * 超宽屏下左栏宽 800px 以上，200px 定高会把照片裁成一条横幅、人脸被切。
- * 高度封顶放到 320：宽高比回到约 2.6:1 以内，脸所在的 22% 焦点带完整露得出。
+ * 超宽屏下左栏宽 800px 以上，定高会把照片裁成一条横幅、人脸被切。
+ * 高度封顶放到 320：宽高比回到约 2.6:1 以内，脸所在的焦点带完整露得出。
  */
 @container stage (min-width: 2560px) {
   .profile {

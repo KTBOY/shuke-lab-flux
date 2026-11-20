@@ -143,7 +143,7 @@ function shiftMonth(step: number): void {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 12px 14px 14px;
+  padding: 8px 14px 10px;
 }
 
 .schedule__head {
@@ -154,7 +154,7 @@ function shiftMonth(step: number): void {
 }
 
 .schedule__month {
-  padding: 4px 11px;
+  padding: 2px 11px;
   border-radius: var(--r-pill);
   background: var(--c-accent-soft);
   color: var(--c-ink-2);
@@ -214,7 +214,7 @@ function shiftMonth(step: number): void {
    * 事件跨 2 行后单行贡献减半，网格内在高度回到时间标签与事件的折中档。
    */
   grid-template-rows: 30px repeat(var(--rows), minmax(0, 1fr));
-  margin-top: 4px;
+  margin-top: 0;
 }
 
 .schedule__corner {
@@ -250,7 +250,7 @@ function shiftMonth(step: number): void {
 .schedule__time {
   display: flex;
   align-items: flex-start;
-  padding-top: 4px;
+  padding-top: 0;
   font-size: var(--fs-mini);
   color: var(--c-ink-3);
 }
@@ -269,7 +269,7 @@ function shiftMonth(step: number): void {
   gap: 8px;
   align-self: center;
   width: calc(100% + 10px);
-  padding: 8px 9px;
+  padding: 5px 9px;
   border-radius: 12px;
 }
 

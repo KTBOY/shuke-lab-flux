@@ -77,15 +77,15 @@ const progress = computed(() =>
 .tracker {
   display: flex;
   flex-direction: column;
-  padding: 12px;
+  padding: 10px 12px;
 }
 
-/* 环与控制同行：卡片高度由环（92px）决定，而不是竖排元素的总和 */
+/* 环与控制同行：卡片高度由环（84px）决定，而不是竖排元素的总和 */
 .tracker__body {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin-top: 10px;
+  margin-top: 6px;
 }
 
 .tracker__ring {
@@ -93,7 +93,7 @@ const progress = computed(() =>
   display: grid;
   place-items: center;
   flex: none;
-  width: 92px;
+  width: 84px;
   aspect-ratio: 1;
 }
 

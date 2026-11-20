@@ -47,7 +47,7 @@ import { PROGRESS_CARD, PROGRESS_DAYS, PROGRESS_WEEK_AVG } from '@/data/dashboar
 defineOptions({ name: 'Dashboard-WorkProgressCard' })
 
 /** 图表列约占整行的 2/3（其余给解读栏），高度与折边宽度按这一档幅面定标 */
-const CHART_HEIGHT = 250
+const CHART_HEIGHT = 172
 /** 容器高度与实例化参数同源，避免样式和 JS 各写一遍 */
 const chartBox = { height: `${CHART_HEIGHT}px` }
 /** 卡片实测宽远小于库原稿的 860，只能按 1 CSS px = 1 设计单位建设计空间 */
@@ -183,7 +183,7 @@ onScopeDispose(() => {
 .progress {
   display: flex;
   flex-direction: column;
-  padding: 12px;
+  padding: 10px 12px;
   overflow: hidden;
 }
 
@@ -216,7 +216,7 @@ onScopeDispose(() => {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 6px;
 }
 
 .progress__value {

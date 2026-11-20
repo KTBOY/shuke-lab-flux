@@ -99,7 +99,7 @@ const restText = computed(() =>
   --at-back: 0.1s;
   display: flex;
   flex-direction: column;
-  padding: 16px 14px 14px;
+  padding: 12px 14px;
   border-radius: var(--r-panel);
   background: var(--c-dark-2);
   color: var(--c-on-dark);
@@ -111,7 +111,7 @@ const restText = computed(() =>
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2px 8px;
+  padding: 0 2px 6px;
 }
 
 .tasks__title {
@@ -157,7 +157,7 @@ const restText = computed(() =>
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 4px 4px;
+  padding: 3px 4px;
   border-radius: 10px;
   text-align: left;
   transition: background-color 0.18s ease;
